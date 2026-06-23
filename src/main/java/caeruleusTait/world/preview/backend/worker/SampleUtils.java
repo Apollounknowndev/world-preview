@@ -294,7 +294,7 @@ public class SampleUtils implements AutoCloseable {
                 i -> chunkProgressListener
         );
 
-        // All this stuff, just so we can give Forge a fake minecraft server...
+        // All this stuff, just so we can give the mod loader a fake minecraft server...
         WorldPreview.get().loaderSpecificSetup(minecraftServer);
 
         // Use this (or add an option) to do things "properly"

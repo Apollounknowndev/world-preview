@@ -134,6 +134,23 @@ public class DummyServerLevelData implements ServerLevelData {
 
     }
 
+    // Added by NeoForge to ServerLevelData; not present on the vanilla interface used by the Fabric build, so no @Override.
+    public void setDayTimePerTick(float dayTimePerTick) {
+
+    }
+
+    public void setDayTimeFraction(float dayTimeFraction) {
+
+    }
+
+    public float getDayTimePerTick() {
+        return 0.0f;
+    }
+
+    public float getDayTimeFraction() {
+        return 0.0f;
+    }
+
     @Override
     public BlockPos getSpawnPos() {
         return BlockPos.ZERO;

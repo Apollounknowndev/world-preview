@@ -554,7 +554,7 @@ public class PreviewContainer implements AutoCloseable, PreviewDisplayDataProvid
             );
         };
 
-        // Some forge mods require running the server setup in a specific thread pool to switch
+        // Some mods require running the server setup in a specific thread pool to switch
         // to the server specific logic (`EffectiveSide.get().isClient()`)
         if (serverThreadPoolExecutor != null) {
             try {
