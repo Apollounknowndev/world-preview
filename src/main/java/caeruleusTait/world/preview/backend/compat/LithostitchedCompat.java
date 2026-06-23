@@ -8,29 +8,41 @@ import java.lang.reflect.Method;
 
 /**
  * Replays Lithostitched's modifier pass on the preview's dummy server, which never starts a real
- * server and so never triggers Lithostitched on its own. Resolved by reflection (the entry point
- * is internal and changes between versions) and no-ops when Lithostitched is absent.
+ * server and so never triggers Lithostitched on its own. The apply entry point is internal and
+ * changes between Lithostitched versions, so it is resolved by reflection; nothing happens when
+ * Lithostitched is absent.
  */
 public final class LithostitchedCompat {
+    private static final String MOD_ID = "lithostitched";
+
+    // Apply entry points across Lithostitched versions, newest first.
+    private static final String INTERNAL_HOOKS = "dev.worldgen.lithostitched.impl.LithostitchedInternalHooks";
+    private static final String MODIFIER_MANAGER = "dev.worldgen.lithostitched.impl.worldgen.modifier.ModifierManager";
+    private static final String MODIFIER = "dev.worldgen.lithostitched.worldgen.modifier.Modifier";
+    private static final String SURFACE_RULE_MANAGER = "dev.worldgen.lithostitched.worldgen.surface.SurfaceRuleManager";
+
     private static volatile boolean warned = false;
 
     private LithostitchedCompat() {
     }
 
-    public static void applyModifiers(MinecraftServer server) {
+    public static void apply(MinecraftServer server) {
+        if (!WorldPreview.get().isModLoaded(MOD_ID)) {
+            return;
+        }
         try {
             // Newest releases: one hook applies modifiers, surface rules and injectors.
-            if (callStatic("dev.worldgen.lithostitched.impl.LithostitchedInternalHooks", "onServerAboutToStart", server)) {
+            if (callStatic(INTERNAL_HOOKS, "onServerAboutToStart", server)) {
                 return;
             }
 
             // Older: apply-all moved from Modifier to ModifierManager in 1.6; surface rules are separate.
-            boolean modifiers = callStatic("dev.worldgen.lithostitched.impl.worldgen.modifier.ModifierManager", "applyModifiers", server)
-                    || callStatic("dev.worldgen.lithostitched.worldgen.modifier.Modifier", "applyModifiers", server);
-            boolean surfaceRules = callStatic("dev.worldgen.lithostitched.worldgen.surface.SurfaceRuleManager", "applySurfaceRules", server);
+            boolean modifiers = callStatic(MODIFIER_MANAGER, "applyModifiers", server)
+                    || callStatic(MODIFIER, "applyModifiers", server);
+            boolean surfaceRules = callStatic(SURFACE_RULE_MANAGER, "applySurfaceRules", server);
 
             if (!modifiers && !surfaceRules) {
-                warnOnce("Lithostitched is present but no known worldgen apply hook was found; the preview will not reflect its modifiers", null);
+                warnOnce("Lithostitched is installed but no known worldgen apply hook was found; the preview will not reflect its modifiers", null);
             }
         } catch (InvocationTargetException e) {
             warnOnce("Lithostitched threw while applying worldgen modifiers to the preview", e.getCause());

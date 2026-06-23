@@ -304,9 +304,7 @@ public class SampleUtils implements AutoCloseable {
         // All this stuff, just so we can give the mod loader a fake minecraft server...
         WorldPreview.get().loaderSpecificSetup(minecraftServer);
 
-        if (WorldPreview.get().isModLoaded("lithostitched")) {
-            LithostitchedCompat.applyModifiers(minecraftServer);
-        }
+        LithostitchedCompat.apply(minecraftServer);
 
         // Use this (or add an option) to do things "properly"
         // ((DummyMinecraftServer) minecraftServer).createLevels();
