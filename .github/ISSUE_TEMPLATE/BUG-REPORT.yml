@@ -38,12 +38,12 @@ body:
       required: true
   - type: dropdown
     attributes:
-      label: Modloader (Fabric/Forge)
+      label: Modloader (Fabric/NeoForge)
       description: Which Modloader are you using?
       multiple: false
       options:
         - Fabric
-        - Forge
+        - NeoForge
       default: 0
     validations:
       required: true
