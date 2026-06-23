@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.util.thread.SidedThreadGroups;
@@ -107,6 +108,10 @@ public class WorldPreview {
 
     public Path configDir() {
         return configDir;
+    }
+
+    public boolean isModLoaded(String id) {
+        return ModList.get().isLoaded(id);
     }
 
     public void loadConfig() {

@@ -108,6 +108,10 @@ public class WorldPreview implements ModInitializer {
         return configDir;
     }
 
+    public boolean isModLoaded(String id) {
+        return FabricLoader.getInstance().isModLoaded(id);
+    }
+
     public void loadConfig() {
         LOGGER.info("Loading config file: {}", configFile);
         try {
