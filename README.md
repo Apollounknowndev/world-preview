@@ -7,7 +7,7 @@ Find us on [modrinth](https://modrinth.com/mod/world-preview/) and [CurseForge](
 ## Installation
 
 Just download the latest *World Preview* JAR file for your ***exact*** Minecraft version.
-Additionally, ***always*** ensure that you are using the correct version for your modloader (Fabric/Forge).
+Additionally, ***always*** ensure that you are using the correct version for your modloader (Fabric/NeoForge).
 Then save the downloaded jar to the `mods` folder of your Minecraft instance.
 
 Finally, if you are on Fabric you also need to download the
