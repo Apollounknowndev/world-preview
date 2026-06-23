@@ -4,8 +4,7 @@ org.gradle.parallel=true
 
 # Fabric Properties
 # check these on https://fabricmc.net/develop
-minecraft_version=1.21.1
-yarn_mappings=1.21.1+build.3
+minecraft_version=26.1.2
 loader_version=0.19.3
 
 # Mod Properties
@@ -14,5 +13,4 @@ maven_group=caeruleusTait
 archives_base_name=world_preview
 
 # Dependencies
-fabric_version=0.116.12+1.21.1
-owo_version=0.11.0+1.20
+fabric_version=0.148.0+26.1.2
