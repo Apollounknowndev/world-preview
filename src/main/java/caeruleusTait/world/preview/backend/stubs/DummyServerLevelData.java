@@ -144,7 +144,7 @@ public class DummyServerLevelData implements ServerLevelData {
     }
 
     public float getDayTimePerTick() {
-        return 0.0f;
+        return 1.0f;
     }
 
     public float getDayTimeFraction() {
