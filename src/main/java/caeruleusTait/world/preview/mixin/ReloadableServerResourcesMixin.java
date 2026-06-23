@@ -4,7 +4,9 @@ import caeruleusTait.world.preview.backend.color.BiomeColorMapReloadListener;
 import caeruleusTait.world.preview.backend.color.ColormapReloadListener;
 import caeruleusTait.world.preview.backend.color.HeightmapPresetReloadListener;
 import caeruleusTait.world.preview.backend.color.StructureMapReloadListener;
+import caeruleusTait.world.preview.backend.worker.SampleUtils;
 import net.minecraft.server.ReloadableServerResources;
+import net.minecraft.server.ServerFunctionLibrary;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,6 +23,10 @@ public abstract class ReloadableServerResourcesMixin {
     @Inject(method = "listeners", at = @At("RETURN"), cancellable = true)
     private void modifyReloadList(CallbackInfoReturnable<List<PreparableReloadListener>> cir) {
         List<PreparableReloadListener> listeners = new ArrayList<>(cir.getReturnValue());
+        if (SampleUtils.skipFunctionReload) {
+            // Preview never runs functions; skip them so function datapacks do not spam parse errors.
+            listeners.removeIf(listener -> listener instanceof ServerFunctionLibrary);
+        }
         listeners.add(new BiomeColorMapReloadListener());
         listeners.add(new StructureMapReloadListener());
         listeners.add(new HeightmapPresetReloadListener());
