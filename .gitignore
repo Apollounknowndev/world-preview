@@ -45,6 +45,6 @@ gradle.properties
 WorldPreview.java
 WorldPreviewClient.java
 fabric.mod.json
-mods.toml
+neoforge.mods.toml
 pack.mcmeta
 settings.gradle
