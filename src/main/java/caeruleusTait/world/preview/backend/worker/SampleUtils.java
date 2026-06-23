@@ -2,6 +2,7 @@ package caeruleusTait.world.preview.backend.worker;
 
 import caeruleusTait.world.preview.WorldPreview;
 import caeruleusTait.world.preview.WorldPreviewConfig;
+import caeruleusTait.world.preview.backend.compat.LithostitchedCompat;
 import caeruleusTait.world.preview.backend.storage.PreviewLevel;
 import caeruleusTait.world.preview.backend.stubs.DummyMinecraftServer;
 import caeruleusTait.world.preview.backend.stubs.DummyServerLevelData;
@@ -74,6 +75,9 @@ import static caeruleusTait.world.preview.WorldPreview.LOGGER;
 import static net.minecraft.core.registries.Registries.LEVEL_STEM;
 
 public class SampleUtils implements AutoCloseable {
+    // Preview never runs functions; ReloadableServerResourcesMixin drops the function library while set.
+    public static volatile boolean skipFunctionReload = false;
+
     private final Path tempDir;
     private final DataFixer dataFixer;
     private final LevelStorageSource.LevelStorageAccess levelStorageAccess;
@@ -247,6 +251,7 @@ public class SampleUtils implements AutoCloseable {
         final Executor executor = Executors.newSingleThreadExecutor();
         final LevelSettings levelSettings = new LevelSettings("temp", GameType.CREATIVE, false, Difficulty.NORMAL, true, new GameRules(), worldDataConfiguration);
         final PrimaryLevelData primaryLevelData = new PrimaryLevelData(levelSettings, worldOptions, PrimaryLevelData.SpecialWorldProperty.NONE, Lifecycle.stable());
+        skipFunctionReload = true;
         final var future = ReloadableServerResources.loadResources(resourceManager, layeredRegistryAccess, worldDataConfiguration.enabledFeatures(), Commands.CommandSelection.DEDICATED, functionCompilationLevel, executor, executor);
         final ReloadableServerResources reloadableServerResources;
         try {
@@ -256,6 +261,8 @@ public class SampleUtils implements AutoCloseable {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
+        } finally {
+            skipFunctionReload = false;
         }
         // Pre 1.20.5 version:
         // ReloadableServerResources reloadableServerResources = new ReloadableServerResources(layeredRegistryAccess.compositeAccess(), FeatureFlagSet.of(), Commands.CommandSelection.ALL, 0);
@@ -296,6 +303,8 @@ public class SampleUtils implements AutoCloseable {
 
         // All this stuff, just so we can give the mod loader a fake minecraft server...
         WorldPreview.get().loaderSpecificSetup(minecraftServer);
+
+        LithostitchedCompat.apply(minecraftServer);
 
         // Use this (or add an option) to do things "properly"
         // ((DummyMinecraftServer) minecraftServer).createLevels();
