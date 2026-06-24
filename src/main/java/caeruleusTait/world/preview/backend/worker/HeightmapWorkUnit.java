@@ -50,8 +50,12 @@ public class HeightmapWorkUnit extends WorkUnit {
         final int cellWidth = noiseSettings.getCellWidth();
         final int cellHeight = noiseSettings.getCellHeight();
 
-        final int minY = config.onlySampleInVisualRange ? config.heightmapMinY : noiseSettings.minY();
-        final int maxY = config.onlySampleInVisualRange ? config.heightmapMaxY : minY + noiseSettings.height();
+        // Clamp the visual range to the dimension's actual noise range, otherwise a range set for a
+        // taller dimension overflows this dimension's noise cells (selectCellYZ out of bounds).
+        final int noiseMinY = noiseSettings.minY();
+        final int noiseMaxY = noiseMinY + noiseSettings.height();
+        final int minY = config.onlySampleInVisualRange ? Math.max(noiseMinY, config.heightmapMinY) : noiseMinY;
+        final int maxY = config.onlySampleInVisualRange ? Math.min(noiseMaxY, config.heightmapMaxY) : noiseMaxY;
         final int cellMinY = Mth.floorDiv(minY, noiseSettings.getCellHeight());
         final int cellCountY = Mth.floorDiv(maxY - minY, noiseSettings.getCellHeight());
         final int cellOffsetY = config.onlySampleInVisualRange ? cellMinY -  Mth.floorDiv(noiseSettings.minY(), noiseSettings.getCellHeight()): 0;
