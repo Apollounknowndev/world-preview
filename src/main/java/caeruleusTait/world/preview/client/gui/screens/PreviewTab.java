@@ -1,6 +1,7 @@
 package caeruleusTait.world.preview.client.gui.screens;
 
 import caeruleusTait.world.preview.WorldPreview;
+import caeruleusTait.world.preview.backend.compat.LithostitchedCompat;
 import caeruleusTait.world.preview.backend.storage.PreviewStorage;
 import caeruleusTait.world.preview.client.gui.PreviewContainerDataProvider;
 import caeruleusTait.world.preview.mixin.client.CreateWorldScreenAccessor;
@@ -125,7 +126,13 @@ public class PreviewTab implements Tab, AutoCloseable, PreviewContainerDataProvi
         );
 
         try {
-            return completableFuture.get();
+            WorldCreationContext result = completableFuture.get();
+            // Apply Lithostitched here, while the registries are loaded but before the biome source is
+            // derived from them, so its modifiers and injectors actually reach the preview. The loaded
+            // context carries no level stems, so the selected dimensions are handed across separately.
+            WorldDimensions.Complete dimensions = result.selectedDimensions().bake(result.datapackDimensions());
+            LithostitchedCompat.apply(result.worldgenLoadContext(), dimensions.dimensions(), result.options().seed());
+            return result;
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
