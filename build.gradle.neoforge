@@ -13,15 +13,10 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     version = project.neo_version
-
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
-    }
 
     // The access transformer at META-INF/accesstransformer.cfg is detected automatically.
 
@@ -48,10 +43,6 @@ neoForge {
             sourceSet sourceSets.main
         }
     }
-}
-
-repositories {
-    maven { url = 'https://maven.parchmentmc.org' }
 }
 
 def resourceTargets = ['META-INF/neoforge.mods.toml', 'pack.mcmeta']

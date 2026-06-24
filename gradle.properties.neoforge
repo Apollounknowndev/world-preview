@@ -4,15 +4,11 @@ org.gradle.daemon=false
 
 ## Environment Properties
 
-minecraft_version=1.21.1
-minecraft_version_range=[1.21.1]
-neo_version=21.1.234
+minecraft_version=26.1.2
+minecraft_version_range=[26.1.2]
+neo_version=26.1.2.76
 # The loader version range can only use the major version of FML as bounds
 loader_version_range=[1,)
-
-# Parchment provides parameter names and javadocs on top of the official mappings
-parchment_minecraft_version=1.21.1
-parchment_mappings_version=2024.11.17
 
 ## Mod Properties
 
