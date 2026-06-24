@@ -2,7 +2,6 @@ package caeruleusTait.world.preview.backend.worker;
 
 import caeruleusTait.world.preview.WorldPreview;
 import caeruleusTait.world.preview.WorldPreviewConfig;
-import caeruleusTait.world.preview.backend.compat.LithostitchedCompat;
 import caeruleusTait.world.preview.backend.storage.PreviewLevel;
 import caeruleusTait.world.preview.backend.stubs.DummyMinecraftServer;
 import caeruleusTait.world.preview.backend.stubs.DummyServerLevelData;
@@ -304,8 +303,6 @@ public class SampleUtils implements AutoCloseable {
 
         // All this stuff, just so we can give the mod loader a fake minecraft server...
         WorldPreview.get().loaderSpecificSetup(minecraftServer);
-
-        LithostitchedCompat.apply(minecraftServer);
 
         // Use this (or add an option) to do things "properly"
         // ((DummyMinecraftServer) minecraftServer).createLevels();
