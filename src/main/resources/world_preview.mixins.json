@@ -25,6 +25,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "refmap": "world_preview.refmap.json"
+  }
 }

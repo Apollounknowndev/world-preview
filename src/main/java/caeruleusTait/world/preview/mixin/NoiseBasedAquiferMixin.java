@@ -19,7 +19,7 @@ public abstract class NoiseBasedAquiferMixin {
     @ModifyVariable(
             method = "<init>",
             at = @At(value = "STORE"),
-            ordinal = 2
+            name = "maxGridX"
     )
     private int fixMaxPosX(int k) {
         return k + invokeGridX(((NoiseChunkAccessor)noiseChunk).getCellCountXZ() * cellWidth());
@@ -28,7 +28,7 @@ public abstract class NoiseBasedAquiferMixin {
     @ModifyVariable(
             method = "<init>",
             at = @At(value = "STORE"),
-            ordinal = 5
+            name = "maxGridZ"
     )
     private int fixMaxPosZ(int k) {
         return k + invokeGridZ(((NoiseChunkAccessor)noiseChunk).getCellCountXZ() * cellWidth());
@@ -41,6 +41,6 @@ public abstract class NoiseBasedAquiferMixin {
     abstract int invokeGridZ(int z);
 
     private int cellWidth() {
-        return ((NoiseChunkAccessor) noiseChunk).getNoiseSettings().getCellWidth();
+        return ((NoiseChunkAccessor) noiseChunk).getCellWidth();
     }
 }
