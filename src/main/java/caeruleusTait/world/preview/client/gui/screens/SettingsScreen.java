@@ -9,27 +9,30 @@ import caeruleusTait.world.preview.client.gui.screens.settings.DimensionsTab;
 import caeruleusTait.world.preview.client.gui.screens.settings.GeneralTab;
 import caeruleusTait.world.preview.client.gui.screens.settings.HeightmapTab;
 import caeruleusTait.world.preview.client.gui.screens.settings.SamplingTab;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabManager;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static caeruleusTait.world.preview.client.WorldPreviewComponents.SETTINGS_TITLE;
 
 public class SettingsScreen extends Screen {
-    public static final ResourceLocation HEADER_SEPERATOR = ResourceLocation.parse("textures/gui/header_separator.png");
-    public static final ResourceLocation FOOTER_SEPERATOR = ResourceLocation.parse("textures/gui/footer_separator.png");
-    public static final ResourceLocation LIGHT_DIRT_BACKGROUND = ResourceLocation.parse("textures/gui/light_dirt_background.png");
+    public static final Identifier HEADER_SEPERATOR = Identifier.parse("textures/gui/header_separator.png");
+    public static final Identifier FOOTER_SEPERATOR = Identifier.parse("textures/gui/footer_separator.png");
+    public static final Identifier LIGHT_DIRT_BACKGROUND = Identifier.parse("textures/gui/light_dirt_background.png");
 
     private final Screen lastScreen;
     private final PreviewContainer previewContainer;
@@ -37,6 +40,7 @@ public class SettingsScreen extends Screen {
     private TabManager tabManager;
     private TabNavigationBar tabNavigationBar;
     private GridLayout bottomButtons;
+    private List<Tab> tabs = List.of();
 
     public SettingsScreen(Screen lastScreen, PreviewContainer previewContainer) {
         super(SETTINGS_TITLE);
@@ -48,15 +52,16 @@ public class SettingsScreen extends Screen {
 
     @Override
     protected void init() {
+        tabs = List.of(
+                new GeneralTab(minecraft),
+                new CacheTab(minecraft, previewContainer.dataProvider()),
+                new SamplingTab(minecraft),
+                new HeightmapTab(minecraft, previewContainer.previewData()),
+                new DimensionsTab(minecraft, previewContainer.levelStemKeys()),
+                new BiomesTab(minecraft, previewContainer)
+        );
         tabNavigationBar = TabNavigationBar.builder(tabManager, this.width)
-                .addTabs(
-                        new GeneralTab(minecraft),
-                        new CacheTab(minecraft, previewContainer.dataProvider()),
-                        new SamplingTab(minecraft),
-                        new HeightmapTab(minecraft, previewContainer.previewData()),
-                        new DimensionsTab(minecraft, previewContainer.levelStemKeys()),
-                        new BiomesTab(minecraft, previewContainer)
-                )
+                .addTabs(tabs.toArray(new Tab[0]))
                 .build();
         tabNavigationBar.selectTab(0, false);
         addRenderableWidget(tabNavigationBar);
@@ -75,7 +80,7 @@ public class SettingsScreen extends Screen {
     @Override
     public void repositionElements() {
         if (tabNavigationBar != null) {
-            tabNavigationBar.setWidth(this.width);
+            tabNavigationBar.updateWidth(this.width);
             tabNavigationBar.arrangeElements();
 
             bottomButtons.arrangeElements();
@@ -87,19 +92,19 @@ public class SettingsScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-        guiGraphics.blit(FOOTER_SEPERATOR, 0, Mth.roundToward(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
-        super.render(guiGraphics, i, j, f);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int i, int j, float f) {
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FOOTER_SEPERATOR, 0, Mth.roundToward(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
+        super.extractRenderState(graphics, i, j, f);
     }
 
     @Override
     public void onClose() {
-        Map<ResourceLocation, PreviewMappingData.ColorEntry> toWrite = previewContainer.allBiomes()
+        Map<Identifier, PreviewMappingData.ColorEntry> toWrite = previewContainer.allBiomes()
                 .stream()
                 .filter(x -> x.dataSource() == PreviewData.DataSource.CONFIG)
                 .collect(
                         Collectors.toMap(
-                                x -> x.entry().key().location(),
+                                x -> x.entry().key().identifier(),
                                 x -> new PreviewMappingData.ColorEntry(PreviewData.DataSource.CONFIG, x.color(), x.isCave(), x.name())
                         )
                 );
@@ -111,6 +116,20 @@ public class SettingsScreen extends Screen {
 
         // Go back
         minecraft.setScreen(lastScreen);
+    }
+
+    @Override
+    public void removed() {
+        for (Tab tab : tabs) {
+            if (tab instanceof AutoCloseable closeable) {
+                try {
+                    closeable.close();
+                } catch (Exception e) {
+                    WorldPreview.LOGGER.error("Failed to close tab {}", tab, e);
+                }
+            }
+        }
+        super.removed();
     }
 
 

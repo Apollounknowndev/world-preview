@@ -5,18 +5,20 @@ import caeruleusTait.world.preview.WorldPreviewConfig;
 import caeruleusTait.world.preview.backend.color.ColorMap;
 import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.client.WorldPreviewClient;
+import caeruleusTait.world.preview.client.gui.widgets.EditBoxes;
 import caeruleusTait.world.preview.client.gui.widgets.WGLabel;
 import caeruleusTait.world.preview.client.gui.widgets.lists.BaseObjectSelectionList;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -79,12 +81,10 @@ public class HeightmapTab implements Tab {
         maxYBox = new EditBox(font, 0, 0, 100, LINE_HEIGHT, SETTINGS_HEIGHTMAP_MAX_Y);
         minYBox.setTooltip(Tooltip.create(SETTINGS_HEIGHTMAP_MIN_Y_TOOLTIP));
         maxYBox.setTooltip(Tooltip.create(SETTINGS_HEIGHTMAP_MAX_Y_TOOLTIP));
-        minYBox.setFilter(HeightmapTab::isInteger);
-        maxYBox.setFilter(HeightmapTab::isInteger);
         minYBox.setValue(String.valueOf(cfg.heightmapMinY));
         maxYBox.setValue(String.valueOf(cfg.heightmapMaxY));
-        minYBox.setResponder(x -> cfg.heightmapMinY = x.isBlank() ? 0 : Integer.parseInt(x));
-        maxYBox.setResponder(x -> cfg.heightmapMaxY = x.isBlank() ? 0 : Integer.parseInt(x));
+        minYBox.setResponder(EditBoxes.filtered(minYBox, HeightmapTab::isInteger, x -> cfg.heightmapMinY = x.isBlank() ? 0 : Integer.parseInt(x)));
+        maxYBox.setResponder(EditBoxes.filtered(maxYBox, HeightmapTab::isInteger, x -> cfg.heightmapMaxY = x.isBlank() ? 0 : Integer.parseInt(x)));
         toRender.add(minYBox);
         toRender.add(maxYBox);
 
@@ -147,6 +147,11 @@ public class HeightmapTab implements Tab {
     }
 
     @Override
+    public @NotNull Component getTabExtraNarration() {
+        return Component.empty();
+    }
+
+    @Override
     public void visitChildren(Consumer<AbstractWidget> consumer) {
         toRender.forEach(consumer);
     }
@@ -202,8 +207,7 @@ public class HeightmapTab implements Tab {
 
         //      New Line
         topL += (LINE_HEIGHT / 2) + LINE_VSPACE;
-        heightPresetList.setPosition(leftL, topL);
-        heightPresetList.setSize(secWidth, bottomL - topL - LINE_VSPACE);
+        heightPresetList.updateSizeAndPosition(secWidth, bottomL - topL - LINE_VSPACE, leftL, topL);
 
         // RIGHT COLUMN
         //  - TOP
@@ -212,8 +216,7 @@ public class HeightmapTab implements Tab {
 
         //      New Line
         topR += (LINE_HEIGHT / 2) + LINE_VSPACE;
-        colormapList.setPosition(leftR, topR);
-        colormapList.setSize(secWidth, bottomR - topR + LINE_HEIGHT);
+        colormapList.updateSizeAndPosition(secWidth, bottomR - topR + LINE_HEIGHT, leftR, topR);
     }
 
 
@@ -250,24 +253,18 @@ public class HeightmapTab implements Tab {
             }
 
             @Override
-            public void render(
-                    GuiGraphics guiGraphics,
-                    int index,
-                    int top,
-                    int left,
-                    int width,
-                    int height,
+            public void extractContent(
+                    GuiGraphicsExtractor graphics,
                     int mouseX,
-
                     int mouseY,
-                    boolean bl,
+                    boolean hovered,
                     float partialTick
             ) {
-                guiGraphics.drawString(minecraft.font, displayString, left + 4, top + 2, 0xFFFFFF);
+                graphics.text(minecraft.font, displayString, getX() + 4, getY() + 2, 0xFFFFFFFF);
             }
 
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 onClick.accept(this);
                 return true;
@@ -290,7 +287,6 @@ public class HeightmapTab implements Tab {
             public final ColorMap colorMap;
             private final Consumer<ColormapEntry> onClick;
 
-            private final NativeImage colormapImg;
             private final DynamicTexture colormapTexture;
 
             public ColormapEntry(ColorMap colorMap, Consumer<ColormapEntry> onClick) {
@@ -298,11 +294,11 @@ public class HeightmapTab implements Tab {
                 this.colorMap = colorMap;
                 this.onClick = onClick;
 
-                this.colormapImg = new NativeImage(NativeImage.Format.RGBA, 1024, 1, true);
-                this.colormapTexture = new DynamicTexture(this.colormapImg);
-
+                this.colormapTexture = new DynamicTexture("world_preview:colormap", 1024, 1, true);
+                NativeImage pixels = this.colormapTexture.getPixels();
                 for (int i = 0; i < 1024; ++i) {
-                    this.colormapImg.setPixelRGBA(i, 0, colorMap.getARGB((float)i / 1024f));
+                    // getARGB actually returns ABGR-packed bytes, so write them raw.
+                    pixels.setPixelABGR(i, 0, colorMap.getARGB((float)i / 1024f));
                 }
                 this.colormapTexture.upload();
             }
@@ -313,39 +309,38 @@ public class HeightmapTab implements Tab {
             }
 
             @Override
-            public void render(
-                    GuiGraphics guiGraphics,
-                    int index,
-                    int top,
-                    int left,
-                    int width,
-                    int height,
+            public void extractContent(
+                    GuiGraphicsExtractor graphics,
                     int mouseX,
-
                     int mouseY,
-                    boolean bl,
+                    boolean hovered,
                     float partialTick
             ) {
-                guiGraphics.drawString(minecraft.font, name, left + 4, top + 2, 0xFFFFFF);
+                final int left = getX();
+                final int top = getY();
+                final int width = getWidth();
+                final int height = getHeight();
+
+                graphics.text(minecraft.font, name, left + 4, top + 2, 0xFFFFFFFF);
 
                 final int xMin = left + 5;
                 final int yMin = top + 14;
                 final int xMax = left + width - 5;
                 final int yMax = top + height - 3;
 
-                WorldPreviewClient.renderTexture(colormapTexture, xMin, yMin, xMax, yMax);
+                WorldPreviewClient.renderTexture(graphics, colormapTexture, xMin, yMin, xMax, yMax);
 
                 final int colorBorder = 0xFF999999;
 
                 // Create a border
-                guiGraphics.fill(xMin-1, yMin-1, xMax+1, yMin, colorBorder); // Right
-                guiGraphics.fill(xMax, yMin, xMax+1, yMax, colorBorder); // Down
-                guiGraphics.fill(xMin-1, yMax, xMax+1, yMax+1, colorBorder); // Left
-                guiGraphics.fill(xMin-1, yMin, xMin, yMax, colorBorder); // Up
+                graphics.fill(xMin-1, yMin-1, xMax+1, yMin, colorBorder); // Right
+                graphics.fill(xMax, yMin, xMax+1, yMax, colorBorder); // Down
+                graphics.fill(xMin-1, yMax, xMax+1, yMax+1, colorBorder); // Left
+                graphics.fill(xMin-1, yMin, xMin, yMax, colorBorder); // Up
             }
 
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                 onClick.accept(this);
                 return true;

@@ -1,7 +1,7 @@
 package caeruleusTait.world.preview.client.gui.widgets.lists;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -29,25 +29,35 @@ public abstract class BaseObjectSelectionList<E extends BaseObjectSelectionList.
     }
 
     @Override
-    protected int getScrollbarPosition() {
+    protected int scrollBarX() {
         return getRowRight();
     }
 
     @Override
-    protected void renderSelection(GuiGraphics guiGraphics, int rowTop, int rowWidth, int innerHeight, int boxBorderColor, int boxInnerColor) {
+    protected void extractSelection(GuiGraphicsExtractor graphics, E entry, int outlineColor) {
         int left = this.getRowLeft();
         int right = this.getRowRight();
-        guiGraphics.fill(left, rowTop - 2, right, rowTop + innerHeight + 2, boxBorderColor);
-        guiGraphics.fill(left + 1, rowTop - 1, right - 1, rowTop + innerHeight + 1, boxInnerColor);
+        int rowTop = entry.getY();
+        int innerHeight = entry.getHeight() - 4;
+        graphics.fill(left, rowTop - 2, right, rowTop + innerHeight + 2, outlineColor);
+        graphics.fill(left + 1, rowTop - 1, right - 1, rowTop + innerHeight + 1, -16777216);
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractWidgetRenderState(graphics, mouseX, mouseY, partialTick);
 
         E hovered = getHovered();
-        if (hovered != null && hovered.tooltip() != null && minecraft.screen != null) {
-            minecraft.screen.setTooltipForNextRenderPass(hovered.tooltip(), DefaultTooltipPositioner.INSTANCE, true);
+        if (hovered != null && hovered.tooltip() != null) {
+            Minecraft minecraft = Minecraft.getInstance();
+            graphics.setTooltipForNextFrame(
+                    minecraft.font,
+                    hovered.tooltip().toCharSequence(minecraft),
+                    DefaultTooltipPositioner.INSTANCE,
+                    mouseX,
+                    mouseY,
+                    true
+            );
         }
     }
 

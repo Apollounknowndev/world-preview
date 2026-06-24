@@ -4,9 +4,10 @@
 package caeruleusTait.world.preview.client.gui.widgets;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 
 public class WGLabel extends AbstractWidget {
@@ -41,7 +42,7 @@ public class WGLabel extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         // Do nothing...
         return false;
     }
@@ -70,8 +71,11 @@ public class WGLabel extends AbstractWidget {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
-        guiGraphics.drawString(font, component, startX, startY, color);
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int i, int j, float f) {
+        // The old GuiGraphics.drawString forced full alpha when none was given; the extractor skips
+        // any text with a zero alpha channel, so apply the same implicit opacity here.
+        int drawColor = (color & 0xFC000000) == 0 ? color | 0xFF000000 : color;
+        graphics.text(font, component, startX, startY, drawColor);
     }
 
     @Override

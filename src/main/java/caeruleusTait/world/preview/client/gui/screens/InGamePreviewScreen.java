@@ -5,11 +5,12 @@ import caeruleusTait.world.preview.backend.storage.PreviewStorage;
 import caeruleusTait.world.preview.client.WorldPreviewComponents;
 import caeruleusTait.world.preview.client.gui.PreviewContainerDataProvider;
 import caeruleusTait.world.preview.mixin.MinecraftServerAccessor;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
@@ -67,11 +68,11 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
 
-        guiGraphics.drawCenteredString(minecraft.font, WorldPreviewComponents.TITLE_FULL, width / 2, 6, 0xFFFFFF);
-        guiGraphics.blit(FOOTER_SEPARATOR, 0, Mth.roundToward(this.height - 30, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
+        graphics.centeredText(minecraft.font, WorldPreviewComponents.TITLE_FULL, width / 2, 6, 0xFFFFFFFF);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, FOOTER_SEPARATOR, 0, Mth.roundToward(this.height - 30, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
     }
 
     @Override
@@ -98,7 +99,7 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
         if (!worldPreview.cfg().cacheInGame) {
             return;
         }
-        minecraft.forceSetScreen(new PreviewCacheLoadingScreen(SAVING_PREVIEW));
+        minecraft.setScreen(new PreviewCacheLoadingScreen(SAVING_PREVIEW));
         writeCacheFile(previewContainer.workManager().previewStorage(), cacheDir().resolve(filename()));
     }
 
@@ -108,9 +109,9 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
             return new PreviewStorage(yMin, yMax);
         }
 
-        minecraft.forceSetScreen(new PreviewCacheLoadingScreen(LOADING_PREVIEW));
+        minecraft.setScreen(new PreviewCacheLoadingScreen(LOADING_PREVIEW));
         final PreviewStorage res = readCacheFile(yMin, yMax, cacheDir().resolve(filename()));
-        minecraft.forceSetScreen(this);
+        minecraft.setScreen(this);
         return res;
     }
 
@@ -154,7 +155,7 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
 
     @Override
     public WorldOptions worldOptions(@Nullable WorldCreationContext wcContext) {
-        return integratedServer.getWorldData().worldGenOptions();
+        return integratedServer.getWorldGenSettings().options();
     }
 
     @Override
@@ -169,7 +170,7 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
 
     @Override
     public Registry<LevelStem> levelStemRegistry(@Nullable WorldCreationContext wcContext) {
-        return integratedServer.registryAccess().registryOrThrow(Registries.LEVEL_STEM);
+        return integratedServer.registryAccess().lookupOrThrow(Registries.LEVEL_STEM);
     }
 
     @Override

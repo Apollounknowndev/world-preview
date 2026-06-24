@@ -4,6 +4,7 @@ import caeruleusTait.world.preview.WorldPreview;
 import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.client.gui.screens.PreviewContainer;
 import caeruleusTait.world.preview.client.gui.widgets.ColorChooser;
+import caeruleusTait.world.preview.client.gui.widgets.EditBoxes;
 import caeruleusTait.world.preview.client.gui.widgets.WGLabel;
 import caeruleusTait.world.preview.client.gui.widgets.lists.BiomesList;
 import caeruleusTait.world.preview.mixin.client.CheckboxAccessor;
@@ -21,7 +22,7 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.dimension.LevelStem;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,7 +45,7 @@ import static caeruleusTait.world.preview.client.WorldPreviewComponents.SETTINGS
 import static caeruleusTait.world.preview.client.gui.screens.PreviewContainer.LINE_HEIGHT;
 import static caeruleusTait.world.preview.client.gui.screens.PreviewContainer.LINE_VSPACE;
 
-public class BiomesTab implements Tab {
+public class BiomesTab implements Tab, AutoCloseable {
     private final PreviewContainer previewContainer;
     private final Minecraft minecraft;
     private final GridLayout layout = new GridLayout();
@@ -75,9 +76,8 @@ public class BiomesTab implements Tab {
         final int FULL_WIDTH = EDIT_WIDTH + LABEL_WIDTH + COLUMN_SPACING + 1; // +1 because of EditBox
 
         filterCycleButton = CycleButton
-                .builder(BiomeListFilter::toComponent)
+                .builder(BiomeListFilter::toComponent, BiomeListFilter.DIMENSION)
                 .withValues(BiomeListFilter.values())
-                .withInitialValue(BiomeListFilter.DIMENSION)
                 .create(
                         0,
                         0,
@@ -125,10 +125,6 @@ public class BiomesTab implements Tab {
                 .width(FULL_WIDTH)
                 .build();
 
-        hueBox.setFilter(x -> validateMaxInt(x, 360));
-        satBox.setFilter(x -> validateMaxInt(x, 100));
-        valBox.setFilter(x -> validateMaxInt(x, 100));
-
         Consumer<String> hsvConsumer = x -> {
             if (!blockUpdates) {
                 colorChooser.updateHSV(
@@ -140,9 +136,9 @@ public class BiomesTab implements Tab {
             }
         };
 
-        hueBox.setResponder(hsvConsumer);
-        satBox.setResponder(hsvConsumer);
-        valBox.setResponder(hsvConsumer);
+        hueBox.setResponder(EditBoxes.filtered(hueBox, x -> validateMaxInt(x, 360), hsvConsumer));
+        satBox.setResponder(EditBoxes.filtered(satBox, x -> validateMaxInt(x, 100), hsvConsumer));
+        valBox.setResponder(EditBoxes.filtered(valBox, x -> validateMaxInt(x, 100), hsvConsumer));
 
         colorChooser.setUpdater((h, s, v) -> {
             try {
@@ -201,8 +197,18 @@ public class BiomesTab implements Tab {
     }
 
     @Override
+    public void close() {
+        colorChooser.close();
+    }
+
+    @Override
     public @NotNull Component getTabTitle() {
         return SETTINGS_BIOMES_TITLE;
+    }
+
+    @Override
+    public @NotNull Component getTabExtraNarration() {
+        return Component.empty();
     }
 
     @Override
@@ -222,8 +228,7 @@ public class BiomesTab implements Tab {
         filterCycleButton.setWidth(leftWidth);
 
         int listTop = top + LINE_HEIGHT + LINE_VSPACE;
-        biomesList.setPosition(left, listTop);
-        biomesList.setSize(leftWidth, bottom - listTop - LINE_VSPACE);
+        biomesList.updateSizeAndPosition(leftWidth, bottom - listTop - LINE_VSPACE, left, listTop);
         biomesList.replaceEntries(filterCycleButton.getValue().apply(previewContainer.allBiomes()));
 
         colorChooser.setSquareSize(screenRectangle.width() / 4);
@@ -265,19 +270,19 @@ public class BiomesTab implements Tab {
 
     public enum BiomeListFilter {
         DIMENSION(x -> {
-            LevelStem levelStem = x.previewTab().levelStemRegistry().get(WorldPreview.get().renderSettings().dimension);
+            LevelStem levelStem = x.previewTab().levelStemRegistry().getValue(WorldPreview.get().renderSettings().dimension);
             if (levelStem == null) {
                 return true;
             }
-            Set<ResourceLocation> supportedBiomes = levelStem.generator()
+            Set<Identifier> supportedBiomes = levelStem.generator()
                     .getBiomeSource()
                     .possibleBiomes()
                     .stream()
                     .map(Holder::unwrapKey)
                     .map(Optional::orElseThrow)
-                    .map(ResourceKey::location)
+                    .map(ResourceKey::identifier)
                     .collect(Collectors.toSet());
-            return supportedBiomes.contains(x.entry().key().location());
+            return supportedBiomes.contains(x.entry().key().identifier());
         }),
         ALL(x -> true),
         MISSING(x -> x.dataSource() == PreviewData.DataSource.MISSING),

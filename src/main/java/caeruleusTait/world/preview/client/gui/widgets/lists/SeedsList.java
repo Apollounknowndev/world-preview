@@ -3,8 +3,9 @@ package caeruleusTait.world.preview.client.gui.widgets.lists;
 import caeruleusTait.world.preview.client.gui.screens.PreviewContainer;
 import caeruleusTait.world.preview.client.gui.widgets.OldStyleImageButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -55,21 +56,22 @@ public class SeedsList extends BaseObjectSelectionList<SeedsList.SeedEntry> {
         }
 
         @Override
-        public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean bl, float partialTick) {
-            guiGraphics.drawString(seedsList.minecraft.font, seed, left + 4, top + 6, seedCanChange ? 0xFFFFFF : 0x999999);
+        public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+            final int top = getY();
+            graphics.text(seedsList.minecraft.font, seed, getX() + 4, top + 6, seedCanChange ? 0xFFFFFFFF : 0xFF999999);
             deleteButton.setPosition(seedsList.getRowRight() - 22, top);
-            deleteButton.render(guiGraphics, mouseX, mouseY, partialTick);
+            deleteButton.extractRenderState(graphics, mouseX, mouseY, partialTick);
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
             if (!seedCanChange) {
                 return true;
             }
             if (deleteButton.isHovered()) {
-                deleteButton.mouseClicked(d, e, i);
+                deleteButton.mouseClicked(event, doubleClick);
             }
-            if (i == 0 && d < seedsList.getRowRight() - 22) {
+            if (event.button() == 0 && event.x() < seedsList.getRowRight() - 22) {
                 seedsList.setSelected(this);
                 seedsList.previewContainer.setSeed(seed);
                 minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));

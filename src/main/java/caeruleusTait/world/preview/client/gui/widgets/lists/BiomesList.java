@@ -4,13 +4,14 @@ import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.client.WorldPreviewClient;
 import caeruleusTait.world.preview.client.gui.screens.PreviewContainer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.biome.Biome;
 import org.jetbrains.annotations.NotNull;
@@ -68,8 +69,8 @@ public class BiomesList extends BaseObjectSelectionList<BiomesList.BiomeEntry> {
         }
 
         // If we have more than one page, make sure we don't let the scrollbar run away
-        double maxScroll = Math.max(0.0, super.getItemCount() * super.itemHeight - super.height);
-        if(super.getScrollAmount() > maxScroll) {
+        double maxScroll = Math.max(0.0, super.getItemCount() * super.defaultEntryHeight - super.height);
+        if (super.scrollAmount() > maxScroll) {
             // Make sure that the top entry is visible
             super.setScrollAmount(maxScroll);
         }
@@ -97,7 +98,7 @@ public class BiomesList extends BaseObjectSelectionList<BiomesList.BiomeEntry> {
             this.initialIsCave = initialIsCave;
             this.dataSource = dataSource;
             this.initialDataSource = dataSource;
-            final ResourceLocation resourceLocation = entry.key().location();
+            final Identifier resourceLocation = entry.key().identifier();
             final String langKey = resourceLocation.toLanguageKey("biome");
             if (Language.getInstance().has(langKey)) {
                 this.name = Component.translatable(langKey).getString();
@@ -170,15 +171,17 @@ public class BiomesList extends BaseObjectSelectionList<BiomesList.BiomeEntry> {
         }
 
         @Override
-        public void render(@NotNull GuiGraphics guiGraphics, int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-            guiGraphics.fill(k + 3, j + 1, k + 13, j + 11, nativeColor(color));
+        public void extractContent(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float partialTick) {
+            final int left = getX();
+            final int top = getY();
+            graphics.fill(left + 3, top + 1, left + 13, top + 11, nativeColor(color));
             String formatName = isPrimaryNamespace ? name : "§o" + name;
-            guiGraphics.drawString(BiomesList.this.minecraft.font, formatName, k + 16, j + 2, 0xFFFFFF);
+            graphics.text(BiomesList.this.minecraft.font, formatName, left + 16, top + 2, 0xFFFFFFFF);
         }
 
         @Override
-        public boolean mouseClicked(double d, double e, int i) {
-            if (i != 0) {
+        public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+            if (event.button() != 0) {
                 return false;
             }
 

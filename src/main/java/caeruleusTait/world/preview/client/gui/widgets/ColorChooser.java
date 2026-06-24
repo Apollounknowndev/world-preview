@@ -1,23 +1,19 @@
 package caeruleusTait.world.preview.client.gui.widgets;
 
 import caeruleusTait.world.preview.client.WorldPreviewClient;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.CommonComponents;
-import org.joml.Matrix4f;
 
 import java.awt.*;
 
-public class ColorChooser extends AbstractWidget {
+public class ColorChooser extends AbstractWidget implements AutoCloseable {
 
     public static final int INITIAL_SV_SQUARE_SIZE = 128;
     public static final int INITIAL_H_BAR_WIDTH = 16;
@@ -36,6 +32,12 @@ public class ColorChooser extends AbstractWidget {
     private int argbHueOnly = 0xFF000000;
 
     private ColorUpdater updater;
+
+    private NativeImage svImg;
+    private DynamicTexture svTexture;
+    private float svTextureHue = Float.NaN;
+    private NativeImage hueImg;
+    private DynamicTexture hueTexture;
 
     public ColorChooser(int x, int y) {
         super(x, y, 10, 10, CommonComponents.EMPTY);
@@ -56,15 +58,86 @@ public class ColorChooser extends AbstractWidget {
         hBarWidth = (int)(INITIAL_H_BAR_WIDTH * scalor);
         finalColorHeight = (int)(INITIAL_FINAL_COLOR_HEIGHT * scalor);
         recalculateSize();
+        closeTextures();
+    }
+
+    private void closeTextures() {
+        if (svTexture != null) {
+            svTexture.close();
+            svTexture = null;
+        }
+        if (svImg != null) {
+            svImg.close();
+            svImg = null;
+        }
+        if (hueTexture != null) {
+            hueTexture.close();
+            hueTexture = null;
+        }
+        if (hueImg != null) {
+            hueImg.close();
+            hueImg = null;
+        }
+        svTextureHue = Float.NaN;
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int i, int j, float f) {
-        // render background
-        guiGraphics.fill(getX() - 2, getY() - 2, getX() + width + 2, getY() + height + 2, 0x77000000);
+    public void close() {
+        closeTextures();
+    }
 
-        RenderSystem.setShader(() -> WorldPreviewClient.HSV_SHADER);
-        Matrix4f posMatrix = guiGraphics.pose().last().pose();
+    private void updateSvTexture() {
+        if (svTexture == null) {
+            svImg = new NativeImage(NativeImage.Format.RGBA, svSquareSize, svSquareSize, true);
+            svTexture = new DynamicTexture(() -> "world_preview:color_chooser_sv", svImg);
+        }
+        if (svTextureHue == hue) {
+            return;
+        }
+        // Horizontal axis is saturation (0..1), vertical axis is value (1 at top, 0 at bottom).
+        for (int py = 0; py < svSquareSize; ++py) {
+            float v = 1f - ((float) py / (float) (svSquareSize - 1));
+            for (int px = 0; px < svSquareSize; ++px) {
+                float s = (float) px / (float) (svSquareSize - 1);
+                svImg.setPixelABGR(px, py, abgr(Color.HSBtoRGB(hue, s, v)));
+            }
+        }
+        svTexture.upload();
+        svTextureHue = hue;
+    }
+
+    private void updateHueTexture() {
+        if (hueTexture != null) {
+            return;
+        }
+        hueImg = new NativeImage(NativeImage.Format.RGBA, 1, svSquareSize, true);
+        hueTexture = new DynamicTexture(() -> "world_preview:color_chooser_hue", hueImg);
+        // Hue runs from 1 at the top to 0 at the bottom.
+        for (int py = 0; py < svSquareSize; ++py) {
+            float h = 1f - ((float) py / (float) (svSquareSize - 1));
+            hueImg.setPixelABGR(0, py, abgr(Color.HSBtoRGB(h, 1f, 1f)));
+        }
+        hueTexture.upload();
+    }
+
+    /**
+     * NativeImage stores pixels as ABGR, while {@link Color#HSBtoRGB} returns ARGB.
+     */
+    private static int abgr(int argb) {
+        int a = (argb >> 24) & 0xFF;
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        return (a << 24) | (b << 16) | (g << 8) | r;
+    }
+
+    @Override
+    public void extractWidgetRenderState(GuiGraphicsExtractor graphics, int i, int j, float f) {
+        // render background
+        graphics.fill(getX() - 2, getY() - 2, getX() + width + 2, getY() + height + 2, 0x77000000);
+
+        updateSvTexture();
+        updateHueTexture();
 
         // Render saturation value chooser
         int leftX = getX();
@@ -72,53 +145,31 @@ public class ColorChooser extends AbstractWidget {
         int rightX = leftX + svSquareSize;
         int botY = topY + svSquareSize;
 
-        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-
-        buffer.addVertex(posMatrix, leftX, topY, 0).setColor(hue, 0f, 1f, 1f);
-        buffer.addVertex(posMatrix, leftX, botY, 0).setColor(hue, 0f, 0f, 1f);
-        buffer.addVertex(posMatrix, rightX, botY, 0).setColor(hue, 1f, 0f, 1f);
-        buffer.addVertex(posMatrix, rightX, topY, 0).setColor(hue, 1f, 1f, 1f);
-
-        try(MeshData data = buffer.build()) {
-            if (data != null) {
-                BufferUploader.drawWithShader(data);
-            }
-        }
+        WorldPreviewClient.renderTexture(graphics, svTexture, leftX, topY, rightX, botY);
 
         // Render saturation value indicator
         int satX = leftX + Math.round(saturation * svSquareSize);
         int valY = topY + Math.round((1f - value) * svSquareSize);
-        guiGraphics.fill(satX - 4, valY - 4, satX + 4, valY + 4, value > .3 ? 0xFF000000 : 0xFFFFFFFF);
-        guiGraphics.fill(satX - 3, valY - 3, satX + 3, valY + 3, argbColor);
+        graphics.fill(satX - 4, valY - 4, satX + 4, valY + 4, value > .3 ? 0xFF000000 : 0xFFFFFFFF);
+        graphics.fill(satX - 3, valY - 3, satX + 3, valY + 3, argbColor);
 
         // Render Hue chooser
-        RenderSystem.setShader(() -> WorldPreviewClient.HSV_SHADER);
         leftX = rightX + SEPARATOR;
         rightX = leftX + hBarWidth;
 
-        buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buffer.addVertex(posMatrix, leftX, topY, 0).setColor(1f, 1f, 1f, 1f);
-        buffer.addVertex(posMatrix, leftX, botY, 0).setColor(0f, 1f, 1f, 1f);
-        buffer.addVertex(posMatrix, rightX, botY, 0).setColor(0f, 1f, 1f, 1f);
-        buffer.addVertex(posMatrix, rightX, topY, 0).setColor(1f, 1f, 1f, 1f);
-
-        try(MeshData data = buffer.build()) {
-            if (data != null) {
-                BufferUploader.drawWithShader(data);
-            }
-        }
+        WorldPreviewClient.renderTexture(graphics, hueTexture, leftX, topY, rightX, botY);
 
         // Render saturation value indicator
         int hueY = topY + Math.round((1f - hue) * svSquareSize);
-        guiGraphics.fill(leftX - 2, hueY - 4, rightX + 2, hueY + 4, 0xFF000000);
-        guiGraphics.fill(leftX - 1, hueY - 3, rightX + 1, hueY + 3, argbHueOnly);
+        graphics.fill(leftX - 2, hueY - 4, rightX + 2, hueY + 4, 0xFF000000);
+        graphics.fill(leftX - 1, hueY - 3, rightX + 1, hueY + 3, argbHueOnly);
 
         // Render final color box
-        guiGraphics.fill(getX(), botY + SEPARATOR, getX() + width, getY() + height, argbColor);
+        graphics.fill(getX(), botY + SEPARATOR, getX() + width, getY() + height, argbColor);
     }
 
-    public boolean mouseEvent(double mouseX, double mouseY, int button, boolean playSound) {
-        if (!this.active || !this.visible || !isValidClickButton(button) || !isMouseOver(mouseX, mouseY)) {
+    public boolean mouseEvent(double mouseX, double mouseY, MouseButtonInfo buttonInfo, boolean playSound) {
+        if (!this.active || !this.visible || !isValidClickButton(buttonInfo) || !isMouseOver(mouseX, mouseY)) {
             return false;
         }
         if (Minecraft.getInstance().screen != null) {
@@ -163,13 +214,13 @@ public class ColorChooser extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return mouseEvent(mouseX, mouseY, button, true);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        return mouseEvent(event.x(), event.y(), event.buttonInfo(), true);
     }
 
     @Override
-    protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-        mouseEvent(mouseX, mouseY, 0, false);
+    protected void onDrag(MouseButtonEvent event, double dragX, double dragY) {
+        mouseEvent(event.x(), event.y(), event.buttonInfo(), false);
     }
 
     public void runUpdater() {
