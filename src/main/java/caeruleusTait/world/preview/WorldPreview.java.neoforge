@@ -1,7 +1,11 @@
 package caeruleusTait.world.preview;
 
 import caeruleusTait.world.preview.backend.WorkManager;
+import caeruleusTait.world.preview.backend.color.BiomeColorMapReloadListener;
+import caeruleusTait.world.preview.backend.color.ColormapReloadListener;
+import caeruleusTait.world.preview.backend.color.HeightmapPresetReloadListener;
 import caeruleusTait.world.preview.backend.color.PreviewMappingData;
+import caeruleusTait.world.preview.backend.color.StructureMapReloadListener;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.resources.Identifier;
@@ -10,6 +14,8 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.util.thread.SidedThreadGroups;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +78,18 @@ public class WorldPreview {
         renderSettings = new RenderSettings();
         workManager = new WorkManager(renderSettings, cfg);
         previewMappingData = new PreviewMappingData();
+
+        // NeoForge rejects reload listeners added through a mixin (unlike Fabric), so the preview's
+        // listeners are registered here. The event also fires for the preview's own ReloadableServerResources
+        // reload, which is where these listeners actually do their work.
+        NeoForge.EVENT_BUS.addListener(this::registerReloadListeners);
+    }
+
+    private void registerReloadListeners(AddServerReloadListenersEvent event) {
+        event.addListener(Identifier.fromNamespaceAndPath("world_preview", "biome_color_map"), new BiomeColorMapReloadListener());
+        event.addListener(Identifier.fromNamespaceAndPath("world_preview", "structure_map"), new StructureMapReloadListener());
+        event.addListener(Identifier.fromNamespaceAndPath("world_preview", "heightmap_preset"), new HeightmapPresetReloadListener());
+        event.addListener(Identifier.fromNamespaceAndPath("world_preview", "colormap"), new ColormapReloadListener());
     }
 
     public Executor serverThreadPoolExecutor() {

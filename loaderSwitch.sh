@@ -7,6 +7,7 @@ FILES=(
   'c|src/main/java/caeruleusTait/world/preview/WorldPreview.java'
   'c|src/main/java/caeruleusTait/world/preview/client/WorldPreviewClient.java'
   'c|src/main/java/caeruleusTait/world/preview/backend/stubs/DummyMinecraftServer.java'
+  'c|src/main/java/caeruleusTait/world/preview/mixin/ReloadableServerResourcesMixin.java'
   'o|src/main/resources/META-INF/neoforge.mods.toml'
   'o|src/main/resources/fabric.mod.json'
   'o|src/main/resources/pack.mcmeta'
