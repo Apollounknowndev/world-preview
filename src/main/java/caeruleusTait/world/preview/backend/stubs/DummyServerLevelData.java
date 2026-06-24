@@ -71,4 +71,20 @@ public class DummyServerLevelData implements ServerLevelData {
     @Override
     public void setSpawn(LevelData.RespawnData respawnData) {
     }
+
+    // NeoForge injects these day-time accessors into ServerLevelData; the preview does not advance
+    // time, so return inert values (a non-zero per-tick rate avoids division by zero).
+    public void setDayTimePerTick(float dayTimePerTick) {
+    }
+
+    public void setDayTimeFraction(float dayTimeFraction) {
+    }
+
+    public float getDayTimePerTick() {
+        return 1.0f;
+    }
+
+    public float getDayTimeFraction() {
+        return 0.0f;
+    }
 }

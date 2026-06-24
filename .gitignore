@@ -44,6 +44,7 @@ build.gradle
 gradle.properties
 WorldPreview.java
 WorldPreviewClient.java
+DummyMinecraftServer.java
 fabric.mod.json
 neoforge.mods.toml
 pack.mcmeta
