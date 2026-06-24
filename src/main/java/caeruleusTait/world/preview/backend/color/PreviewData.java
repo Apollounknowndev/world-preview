@@ -1,7 +1,7 @@
 package caeruleusTait.world.preview.backend.color;
 
 import it.unimi.dsi.fastutil.objects.Object2ShortMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 import java.util.Map;
@@ -21,10 +21,10 @@ public record PreviewData(
         CONFIG,
     }
 
-    public record BiomeData(int id, ResourceLocation tag, int color, int resourceOnlyColor, boolean isCave, boolean resourceOnlyIsCave, String name, String resourceOnlyName, DataSource dataSource) {
+    public record BiomeData(int id, Identifier tag, int color, int resourceOnlyColor, boolean isCave, boolean resourceOnlyIsCave, String name, String resourceOnlyName, DataSource dataSource) {
     }
 
-    public record StructureData(int id, ResourceLocation tag, String name, ResourceLocation icon, ResourceLocation item, boolean showByDefault, DataSource dataSource) {
+    public record StructureData(int id, Identifier tag, String name, Identifier icon, Identifier item, boolean showByDefault, DataSource dataSource) {
     }
 
     public record HeightmapPresetData(String name, int minY, int maxY) {

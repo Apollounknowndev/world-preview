@@ -1,7 +1,7 @@
 package caeruleusTait.world.preview.backend.color;
 
 import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -50,7 +50,7 @@ public class PreviewMappingData {
         resourceOnlyColorMappingData.putAll(colorMappingData);
     }
 
-    public void update(Map<ResourceLocation, ColorEntry> newData) {
+    public void update(Map<Identifier, ColorEntry> newData) {
         colorMappingData.putAll(
                 newData.entrySet()
                         .stream()
@@ -58,7 +58,7 @@ public class PreviewMappingData {
         );
     }
 
-    public void updateStruct(Map<ResourceLocation, StructureEntry> newData) {
+    public void updateStruct(Map<Identifier, StructureEntry> newData) {
         structMappingData.putAll(
                 newData.entrySet()
                         .stream()
@@ -75,13 +75,13 @@ public class PreviewMappingData {
     }
 
     public PreviewData generateMapData(
-            Set<ResourceLocation> biomesSet,
-            Set<ResourceLocation> caveBiomesSet,
-            Set<ResourceLocation> structuresSet,
-            Set<ResourceLocation> displayByDefaultStructuresSet
+            Set<Identifier> biomesSet,
+            Set<Identifier> caveBiomesSet,
+            Set<Identifier> structuresSet,
+            Set<Identifier> displayByDefaultStructuresSet
     ) {
-        List<String> biomes = biomesSet.stream().map(ResourceLocation::toString).sorted().toList();
-        List<String> structures = structuresSet.stream().map(ResourceLocation::toString).sorted().toList();
+        List<String> biomes = biomesSet.stream().map(Identifier::toString).sorted().toList();
+        List<String> structures = structuresSet.stream().map(Identifier::toString).sorted().toList();
 
         final PreviewData res = new PreviewData(
                 new PreviewData.BiomeData[biomes.size()],
@@ -114,7 +114,7 @@ public class PreviewMappingData {
                 resourceOnlyColor = color;
             }
 
-            ResourceLocation biomeRes = ResourceLocation.parse(biome);
+            Identifier biomeRes = Identifier.parse(biome);
             res.biomeId2BiomeData()[id] = new PreviewData.BiomeData(
                     id,
                     biomeRes,
@@ -141,13 +141,13 @@ public class PreviewMappingData {
                 structure.showByDefault = Optional.empty();
             }
 
-            ResourceLocation structureRes = ResourceLocation.parse(structTag);
+            Identifier structureRes = Identifier.parse(structTag);
             res.structId2StructData()[id] = new PreviewData.StructureData(
                     id,
                     structureRes,
                     structure.name,
-                    structure.texture == null ? null : ResourceLocation.parse(structure.texture),
-                    structure.item == null ? null : ResourceLocation.parse(structure.item),
+                    structure.texture == null ? null : Identifier.parse(structure.texture),
+                    structure.item == null ? null : Identifier.parse(structure.item),
                     structure.showByDefault.orElse(displayByDefaultStructuresSet.contains(structureRes)),
                     structure.dataSource
             );

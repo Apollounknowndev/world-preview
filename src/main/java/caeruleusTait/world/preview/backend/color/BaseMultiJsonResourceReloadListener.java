@@ -3,7 +3,7 @@ package caeruleusTait.world.preview.backend.color;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BaseMultiJsonResourceReloadListener extends SimplePreparableReloadListener<Map<ResourceLocation, List<JsonElement>>> {
+public abstract class BaseMultiJsonResourceReloadListener extends SimplePreparableReloadListener<Map<Identifier, List<JsonElement>>> {
     protected static final Gson GSON = (new GsonBuilder()).create();
 
     private final String filename;
@@ -28,19 +28,19 @@ public abstract class BaseMultiJsonResourceReloadListener extends SimplePreparab
 
 
     @Override
-    protected Map<ResourceLocation, List<JsonElement>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
-        Map<ResourceLocation, List<JsonElement>> res = new HashMap<>();
+    protected Map<Identifier, List<JsonElement>> prepare(ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<Identifier, List<JsonElement>> res = new HashMap<>();
 
         for (String namespace : resourceManager.getNamespaces()) {
-            loadAllForLocation(resourceManager, res, ResourceLocation.fromNamespaceAndPath(namespace, filename));
+            loadAllForLocation(resourceManager, res, Identifier.fromNamespaceAndPath(namespace, filename));
         }
 
-        loadAllForLocation(resourceManager, res, ResourceLocation.fromNamespaceAndPath("c", "worldgen/" + filename));
+        loadAllForLocation(resourceManager, res, Identifier.fromNamespaceAndPath("c", "worldgen/" + filename));
 
         return res;
     }
 
-    private void loadAllForLocation(ResourceManager resourceManager, Map<ResourceLocation, List<JsonElement>> res, ResourceLocation rl) {
+    private void loadAllForLocation(ResourceManager resourceManager, Map<Identifier, List<JsonElement>> res, Identifier rl) {
         for (Resource x : resourceManager.getResourceStack(rl)) {
             try (Reader reader = x.openAsReader()) {
                 final List<JsonElement> jsonElements = res.computeIfAbsent(rl, z -> new ArrayList<>());

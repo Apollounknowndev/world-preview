@@ -3,7 +3,7 @@ package caeruleusTait.world.preview.backend.color;
 import caeruleusTait.world.preview.WorldPreview;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
 
@@ -19,7 +19,7 @@ public class StructureMapReloadListener extends BaseMultiJsonResourceReloadListe
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, List<JsonElement>> object, ResourceManager resourceManager, ProfilerFiller profiler) {
+    protected void apply(Map<Identifier, List<JsonElement>> object, ResourceManager resourceManager, ProfilerFiller profiler) {
         final WorldPreview worldPreview = WorldPreview.get();
         final PreviewMappingData previewMappingData = worldPreview.biomeColorMap();
         previewMappingData.clearStructures();
@@ -28,7 +28,7 @@ public class StructureMapReloadListener extends BaseMultiJsonResourceReloadListe
         for (var entry : object.entrySet()) {
             LOGGER.debug(" - loading entries from {}", entry.getKey());
             for (JsonElement jsonElement : entry.getValue()) {
-                Map<ResourceLocation, PreviewMappingData.StructureEntry> curr = parseStructureData(
+                Map<Identifier, PreviewMappingData.StructureEntry> curr = parseStructureData(
                         entry.getKey().getNamespace(),
                         jsonElement,
                         PreviewData.DataSource.RESOURCE
@@ -38,12 +38,12 @@ public class StructureMapReloadListener extends BaseMultiJsonResourceReloadListe
         }
     }
 
-    public static Map<ResourceLocation, PreviewMappingData.StructureEntry> parseStructureData(String namespace, JsonElement jsonElement, PreviewData.DataSource dataSource) {
-        final Map<ResourceLocation, PreviewMappingData.StructureEntry> res = new HashMap<>();
+    public static Map<Identifier, PreviewMappingData.StructureEntry> parseStructureData(String namespace, JsonElement jsonElement, PreviewData.DataSource dataSource) {
+        final Map<Identifier, PreviewMappingData.StructureEntry> res = new HashMap<>();
         final JsonObject obj = jsonElement.getAsJsonObject();
 
         for (var entry : obj.entrySet()) {
-            final ResourceLocation location = ResourceLocation.parse(entry.getKey());
+            final Identifier location = Identifier.parse(entry.getKey());
             final PreviewMappingData.StructureEntry value = new PreviewMappingData.StructureEntry();
             final JsonElement rawEl = entry.getValue();
 
