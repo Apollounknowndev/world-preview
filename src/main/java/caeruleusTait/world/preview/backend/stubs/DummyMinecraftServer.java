@@ -2,18 +2,24 @@ package caeruleusTait.world.preview.backend.stubs;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.DataFixer;
+import net.fabricmc.fabric.api.resource.v1.DataResourceStore;
 import net.minecraft.SystemReport;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Services;
 import net.minecraft.server.WorldStem;
-import net.minecraft.server.level.progress.ChunkProgressListenerFactory;
+import net.minecraft.server.level.progress.LevelLoadListener;
+import net.minecraft.server.notifications.EmptyNotificationService;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.PermissionSet;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.util.debugchart.SampleLogger;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.Optional;
 import java.util.UUID;
 
 public class DummyMinecraftServer extends MinecraftServer {
@@ -25,12 +31,12 @@ public class DummyMinecraftServer extends MinecraftServer {
             Proxy proxy,
             DataFixer dataFixer,
             Services services,
-            ChunkProgressListenerFactory chunkProgressListenerFactory
+            LevelLoadListener levelLoadListener
     ) {
-        super(thread, levelStorageAccess, packRepository, worldStem, proxy, dataFixer, services, chunkProgressListenerFactory);
+        super(thread, levelStorageAccess, packRepository, worldStem, Optional.empty(), proxy, dataFixer, services, levelLoadListener, false);
         this.setSingleplayerProfile(new GameProfile(UUID.randomUUID(), "world-preview"));
         this.setDemo(false);
-        this.setPlayerList(new DummyPlayerList(this, this.registries(), this.playerDataStorage, 1));
+        this.setPlayerList(new DummyPlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()));
     }
 
     @Override
@@ -39,13 +45,13 @@ public class DummyMinecraftServer extends MinecraftServer {
     }
 
     @Override
-    public int getOperatorUserPermissionLevel() {
-        return 0;
+    public @NotNull LevelBasedPermissionSet operatorUserPermissions() {
+        return LevelBasedPermissionSet.ALL;
     }
 
     @Override
-    public int getFunctionCompilationLevel() {
-        return 0;
+    public @NotNull PermissionSet getFunctionCompilationPermissions() {
+        return PermissionSet.ALL_PERMISSIONS;
     }
 
     @Override
@@ -91,12 +97,7 @@ public class DummyMinecraftServer extends MinecraftServer {
     }
 
     @Override
-    public boolean isEpollEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean isCommandBlockEnabled() {
+    public boolean useNativeTransport() {
         return false;
     }
 
@@ -111,7 +112,17 @@ public class DummyMinecraftServer extends MinecraftServer {
     }
 
     @Override
-    public boolean isSingleplayerOwner(@NotNull GameProfile profile) {
+    public boolean isSingleplayerOwner(@NotNull NameAndId nameAndId) {
         return false;
+    }
+
+    @Override
+    public int getMaxPlayers() {
+        return 1;
+    }
+
+    @Override
+    public <T> T getOrThrow(DataResourceStore.Key<T> key) {
+        throw new IllegalStateException("DummyMinecraftServer does not hold data resources");
     }
 }
