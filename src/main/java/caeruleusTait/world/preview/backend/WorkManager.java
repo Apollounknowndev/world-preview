@@ -222,8 +222,8 @@ public class WorkManager {
     }
 
     public void queueRange(BlockPos topLeftBlock, BlockPos bottomRightBlock) {
-        final ChunkPos topLeft = new ChunkPos(topLeftBlock);
-        final ChunkPos bottomRight = new ChunkPos(bottomRightBlock);
+        final ChunkPos topLeft = ChunkPos.containing(topLeftBlock);
+        final ChunkPos bottomRight = ChunkPos.containing(bottomRightBlock);
         if (executorService == null || sampleUtils == null ||
                 (
                         topLeft.equals(lastQueuedTopLeft)
@@ -266,8 +266,8 @@ public class WorkManager {
 
     public void queueRangeReal(BlockPos topLeftBlock, BlockPos bottomRightBlock) {
         final Instant start = Instant.now();
-        final ChunkPos topLeft = new ChunkPos(topLeftBlock);
-        final ChunkPos bottomRight = new ChunkPos(bottomRightBlock);
+        final ChunkPos topLeft = ChunkPos.containing(topLeftBlock);
+        final ChunkPos bottomRight = ChunkPos.containing(bottomRightBlock);
 
         // Cancel current batches
         synchronized (currentBatches) {
@@ -304,8 +304,8 @@ public class WorkManager {
             final int sectionSizeExponent = PreviewSection.SHIFT - PreviewSection.QUART_TO_SECTION_SHIFT;
             final int numChunks = PreviewSection.SECTION_SIZE >> (sectionSizeExponent - 4);
             for (ChunkPos c : chunks) {
-                ChunkPos shifted = new ChunkPos((c.x >> 4) << 4, (c.z >> 4) << 4);
-                if (queuedChunks.add(shifted.toLong())) {
+                ChunkPos shifted = new ChunkPos((c.x() >> 4) << 4, (c.z() >> 4) << 4);
+                if (queuedChunks.add(shifted.pack())) {
                     heightMapChunks.add(shifted);
                 }
             }
@@ -321,8 +321,8 @@ public class WorkManager {
             final int sectionSizeExponent = PreviewSection.SHIFT - PreviewSection.QUART_TO_SECTION_SHIFT;
             final int numChunks = PreviewSection.SECTION_SIZE >> (sectionSizeExponent - 4);
             for (ChunkPos c : chunks) {
-                ChunkPos shifted = new ChunkPos((c.x >> 4) << 4, (c.z >> 4) << 4);
-                if (queuedChunks.add(shifted.toLong())) {
+                ChunkPos shifted = new ChunkPos((c.x() >> 4) << 4, (c.z() >> 4) << 4);
+                if (queuedChunks.add(shifted.pack())) {
                     intersectChunks.add(shifted);
                 }
             }

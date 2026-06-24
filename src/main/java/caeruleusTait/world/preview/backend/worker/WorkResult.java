@@ -10,7 +10,7 @@ public record WorkResult(
         int quartY,
         PreviewSection section,
         List<BlockResult> results,
-        List<com.mojang.datafixers.util.Pair<net.minecraft.resources.ResourceLocation, StructureStart>> structures
+        List<com.mojang.datafixers.util.Pair<net.minecraft.resources.Identifier, StructureStart>> structures
 ) {
 
     public record BlockResult(int quartX, int quartZ, short value) {}

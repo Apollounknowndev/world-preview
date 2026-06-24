@@ -6,7 +6,7 @@ import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.backend.storage.PreviewSection;
 import caeruleusTait.world.preview.backend.storage.PreviewStorage;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.biome.Biome;
 
@@ -33,9 +33,9 @@ public abstract class WorkUnit {
     }
 
     public short biomeIdFrom(ResourceKey<Biome> resourceKey) {
-        return previewData.biome2Id().getShort(resourceKey.location().toString());
+        return previewData.biome2Id().getShort(resourceKey.identifier().toString());
     }
-    public short biomeIdFrom(ResourceLocation location) {
+    public short biomeIdFrom(Identifier location) {
         return previewData.biome2Id().getShort(location.toString());
     }
 

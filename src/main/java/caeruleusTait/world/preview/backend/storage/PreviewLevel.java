@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.chunk.PalettedContainerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.lighting.LevelLightEngine;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.attribute.EnvironmentAttributeReader;
 import net.minecraft.world.level.storage.LevelData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -47,19 +49,19 @@ public class PreviewLevel implements WorldGenLevel {
 
     private final RegistryAccess registryAccess;
     private final LevelHeightAccessor levelHeightAccessor;
-    private final Registry<Biome> biomeRegistry;
+    private final PalettedContainerFactory palettedContainerFactory;
     private final Long2ObjectMap<ProtoChunk> chunks = Long2ObjectMaps.synchronize(new Long2ObjectOpenHashMap<>());
 
     public PreviewLevel(RegistryAccess registryAccess, LevelHeightAccessor levelHeightAccessor) {
         this.registryAccess = registryAccess;
         this.levelHeightAccessor = levelHeightAccessor;
-        this.biomeRegistry = this.registryAccess.registryOrThrow(Registries.BIOME);
+        this.palettedContainerFactory = PalettedContainerFactory.create(registryAccess);
     }
 
     @Nullable
     @Override
     public ChunkAccess getChunk(int x, int z, ChunkStatus requiredStatus, boolean nonnull) {
-        return new ProtoChunk(new ChunkPos(x, z), UpgradeData.EMPTY, levelHeightAccessor, biomeRegistry, null);
+        return new ProtoChunk(new ChunkPos(x, z), UpgradeData.EMPTY, levelHeightAccessor, palettedContainerFactory, null);
 
         // Actually storing chunks would take up too much space
         /*
@@ -73,6 +75,11 @@ public class PreviewLevel implements WorldGenLevel {
     @Override
     public RegistryAccess registryAccess() {
         return registryAccess;
+    }
+
+    @Override
+    public EnvironmentAttributeReader environmentAttributes() {
+        return EnvironmentAttributeReader.EMPTY;
     }
 
     // Stuff we don't need but still need to implement:
@@ -129,7 +136,7 @@ public class PreviewLevel implements WorldGenLevel {
     }
 
     @Override
-    public void playSound(@Nullable Player player, BlockPos pos, SoundEvent sound, SoundSource source, float volume, float pitch) {
+    public void playSound(@Nullable Entity entity, BlockPos pos, SoundEvent sound, SoundSource source, float volume, float pitch) {
         throw new NotImplementedException("Not implemented");
     }
 
@@ -139,17 +146,12 @@ public class PreviewLevel implements WorldGenLevel {
     }
 
     @Override
-    public void levelEvent(@Nullable Player player, int type, BlockPos pos, int data) {
+    public void levelEvent(@Nullable Entity entity, int type, BlockPos pos, int data) {
         throw new NotImplementedException("Not implemented");
     }
 
     @Override
     public void gameEvent(Holder<GameEvent> holder, Vec3 vec3, GameEvent.Context context) {
-        throw new NotImplementedException("Not implemented");
-    }
-
-    @Override
-    public float getShade(Direction direction, boolean shade) {
         throw new NotImplementedException("Not implemented");
     }
 

@@ -4,7 +4,7 @@ import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.backend.storage.PreviewSection;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.QuartPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 
@@ -65,8 +65,8 @@ public class WorkBatch {
                 }
 
                 final ChunkPos chunkPos = workResult.workUnit().chunk();
-                final int qStartX = QuartPos.fromSection(chunkPos.x);
-                final int qStartZ = QuartPos.fromSection(chunkPos.z);
+                final int qStartX = QuartPos.fromSection(chunkPos.x());
+                final int qStartZ = QuartPos.fromSection(chunkPos.z());
 
                 PreviewSection section = workResult.section();
                 PreviewSection.AccessData offsetData = section.calcQuartOffsetData(qStartX, qStartZ, qStartX + 4, qStartZ + 4);
@@ -80,7 +80,7 @@ public class WorkBatch {
                     );
                 }
 
-                for (Pair<ResourceLocation, StructureStart> x : workResult.structures()) {
+                for (Pair<Identifier, StructureStart> x : workResult.structures()) {
                     StructureStart structureStart = x.getSecond();
                     short id = previewData.struct2Id().getShort(x.getFirst().toString());
                     section.addStructure(new PreviewSection.PreviewStruct(

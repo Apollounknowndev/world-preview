@@ -51,14 +51,14 @@ public abstract class PreviewSection implements Serializable {
      * Chunk coords
      */
     public synchronized boolean isCompleted(ChunkPos chunkPos) {
-        return completed.get((chunkPos.x - chunkX) * SECTION_SIZE + (chunkPos.z - chunkZ));
+        return completed.get((chunkPos.x() - chunkX) * SECTION_SIZE + (chunkPos.z() - chunkZ));
     }
 
     /**
      * Chunk coords
      */
     public synchronized void markCompleted(ChunkPos chunkPos) {
-        completed.set((chunkPos.x - chunkX) * SECTION_SIZE + (chunkPos.z - chunkZ));
+        completed.set((chunkPos.x() - chunkX) * SECTION_SIZE + (chunkPos.z() - chunkZ));
     }
 
     public AccessData calcQuartOffsetData(int minQuartX, int minQuartZ, int maxQuartX, int maxQuartZ) {

@@ -3,7 +3,7 @@ package caeruleusTait.world.preview.backend.worker;
 import caeruleusTait.world.preview.backend.color.PreviewData;
 import caeruleusTait.world.preview.backend.storage.PreviewStorage;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 
@@ -16,7 +16,7 @@ public class StructStartWorkUnit extends WorkUnit {
 
     @Override
     protected List<WorkResult> doWork() {
-        List<Pair<ResourceLocation, StructureStart>> res = sampleUtils.doStructures(chunkPos);
+        List<Pair<Identifier, StructureStart>> res = sampleUtils.doStructures(chunkPos);
         return List.of(
                 new WorkResult(
                         this,

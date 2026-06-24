@@ -11,8 +11,8 @@ import java.util.List;
 public class SingleQuartSampler implements ChunkSampler {
     @Override
     public List<BlockPos> blocksForChunk(ChunkPos chunkPos, int y) {
-        final int xMin = SectionPos.sectionToBlockCoord(chunkPos.x, 0);
-        final int zMin = SectionPos.sectionToBlockCoord(chunkPos.z, 0);
+        final int xMin = SectionPos.sectionToBlockCoord(chunkPos.x(), 0);
+        final int zMin = SectionPos.sectionToBlockCoord(chunkPos.z(), 0);
 
         return List.of(new BlockPos(xMin, y, zMin));
     }

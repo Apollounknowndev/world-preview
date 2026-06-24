@@ -14,8 +14,8 @@ public class FullQuartSampler implements ChunkSampler {
     public List<BlockPos> blocksForChunk(ChunkPos chunkPos, int y) {
         final List<BlockPos> res = new ArrayList<>(16);
 
-        final int xMin = SectionPos.sectionToBlockCoord(chunkPos.x, 0);
-        final int zMin = SectionPos.sectionToBlockCoord(chunkPos.z, 0);
+        final int xMin = SectionPos.sectionToBlockCoord(chunkPos.x(), 0);
+        final int zMin = SectionPos.sectionToBlockCoord(chunkPos.z(), 0);
 
         for (int x = 0; x < 16; x += QuartPos.SIZE) {
             for (int z = 0; z < 16; z += QuartPos.SIZE) {

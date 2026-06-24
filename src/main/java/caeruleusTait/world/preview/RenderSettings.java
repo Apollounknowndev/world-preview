@@ -6,7 +6,7 @@ import caeruleusTait.world.preview.backend.sampler.QuarterQuartSampler;
 import caeruleusTait.world.preview.backend.sampler.SingleQuartSampler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.function.IntFunction;
 
@@ -29,7 +29,7 @@ public class RenderSettings {
     private int quartExpand = 1;
     private int quartStride = 1;
     public SamplerType samplerType = SamplerType.AUTO;
-    public ResourceLocation dimension = null;
+    public Identifier dimension = null;
 
     public boolean hideAllStructures = false;
     public transient RenderMode mode = RenderMode.BIOMES;

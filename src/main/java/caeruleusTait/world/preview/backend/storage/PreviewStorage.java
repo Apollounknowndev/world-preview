@@ -69,9 +69,9 @@ public class PreviewStorage implements Serializable {
     }
 
     public PreviewSection section4(ChunkPos chunkPos, int y, long flags) {
-        final int quartX = QuartPos.fromSection(chunkPos.x);
+        final int quartX = QuartPos.fromSection(chunkPos.x());
         final int indexY = (y - yMin) >> Y_BLOCK_SHIFT;
-        final int quartZ = QuartPos.fromSection(chunkPos.z);
+        final int quartZ = QuartPos.fromSection(chunkPos.z());
         final PreviewBlock block;
         synchronized (blocks[indexY]) {
             block = blocks[indexY].computeIfAbsent(quartPosToSectionLong(quartX, quartZ, flags), x -> new PreviewBlock(flags));
