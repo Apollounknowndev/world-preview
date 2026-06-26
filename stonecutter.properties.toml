@@ -1,6 +1,6 @@
 # See https://stonecutter.kikugie.dev/wiki/config/properties#centralized-properties
 mod.id = "world_preview"
-mod.name = "World Preview"
+mod.name = "World Preview Prime"
 mod.group = "dev.worldgen"
 mod.version = "2.0.0"
 

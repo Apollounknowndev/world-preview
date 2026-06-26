@@ -4,8 +4,8 @@ plugins {
 }
 
 // DO NOT set group = ...!
-version = "${property("mod.version")}+${sc.current.version}"
-base.archivesName = "${property("mod.id") as String}-fabric"
+version = "${property("mod.version")}-fabric-${sc.current.project.substringBefore("-")}"
+base.archivesName = "world-preview-prime"
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -33,21 +33,13 @@ repositories {
 }
 
 dependencies {
-    /**
-     * Fetches only the required Fabric API modules to not waste time downloading all of them for each version.
-     * @see <a href="https://github.com/FabricMC/fabric">List of Fabric API modules</a>
-     */
-    fun fapi(vararg modules: String) {
-        for (it in modules) modImplementation(fabricApi.module(it, sc.properties["deps.fabric_api"]))
-    }
-
     minecraft("com.mojang:minecraft:${sc.current.version}")
     // Applies Mojang Mappings on obfuscated versions
     loomx.applyMojangMappings()
 
     // Use `mod{dependency type}` even on 26.1+ - loom-back-compat converts them
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
-    fapi("fabric-lifecycle-events-v1", "fabric-resource-loader-v0", "fabric-content-registries-v0", "fabric-registry-sync-v0")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${property("deps.fabric_api")}")
 }
 
 loom {

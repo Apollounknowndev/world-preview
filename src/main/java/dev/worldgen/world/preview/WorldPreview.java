@@ -12,13 +12,16 @@ import java.nio.file.Path;
 
 
 //? if fabric {
-/*public static final Path CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("world_preview");D
- *///? } else {
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
+//? } else {
+/*
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.util.thread.SidedThreadGroups;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
-//? }
+import java.util.concurrent.Executors;
+*///? }
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +31,6 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class WorldPreview {
@@ -37,10 +39,10 @@ public class WorldPreview {
     private static final Gson GSON = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
     
     //? if fabric {
-    /*public static final Path CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("world_preview");D
-    *///? } else {
-    public static final Path CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("world_preview");
-    //? }
+    public static final Path CONFIG_FOLDER = FabricLoader.getInstance().getConfigDir().resolve("world_preview");
+    //? } else {
+    /*public static final Path CONFIG_FOLDER = FMLPaths.CONFIGDIR.get().resolve("world_preview");
+    *///? }
     
 
     private static final Path configFile = CONFIG_FOLDER.resolve("config.json");
@@ -53,11 +55,6 @@ public class WorldPreview {
     private static WorkManager workManager;
     private static PreviewMappingData previewMappingData;
     private static RenderSettings renderSettings;
-    private static WorldPreview INSTANCE;
-
-    public static WorldPreview get() {
-        return INSTANCE;
-    }
 
     public static void init() {
         if (!Files.exists(CONFIG_FOLDER)) {
@@ -76,15 +73,29 @@ public class WorldPreview {
     }
 
     public static Executor serverThreadPoolExecutor() {
-        return Executors.newSingleThreadExecutor(SidedThreadGroups.SERVER);
+        //? if fabric {
+        // Nothing to do on fabric
+        return null;
+        //? } else {
+        /*return Executors.newSingleThreadExecutor(SidedThreadGroups.SERVER);
+         *///? }
     }
 
-    public static void loaderSpecificSetup(MinecraftServer minecraftServer) {
-        ServerLifecycleHooks.handleServerAboutToStart(minecraftServer);
+    public static void loaderSpecificSetup(MinecraftServer server) {
+        //? if fabric {
+        ServerLifecycleEvents.SERVER_STARTING.invoker().onServerStarting(server);
+        //? } else {
+        /*ServerLifecycleHooks.handleServerAboutToStart(server);
+         *///? }
     }
 
-    public static void loaderSpecificTeardown(MinecraftServer minecraftServer) {
-        ServerLifecycleHooks.handleServerStopped(minecraftServer);
+    public static void loaderSpecificTeardown(MinecraftServer server) {
+        //? if fabric {
+        // Nothing to do on fabric
+        
+        //? } else {
+        /*ServerLifecycleHooks.handleServerStopped(server);
+         *///? }
     }
 
     public static WorldPreviewConfig cfg() {
@@ -108,7 +119,11 @@ public class WorldPreview {
     }
 
     public static boolean isModLoaded(String id) {
-        return ModList.get().isLoaded(id);
+        //? if fabric {
+        return FabricLoader.getInstance().isModLoaded(id);
+        //? } else {
+        /*return ModList.get().isLoaded(id);
+         *///? }
     }
 
     public static void loadConfig() {

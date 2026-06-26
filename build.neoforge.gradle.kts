@@ -3,8 +3,8 @@ plugins {
     id("neoforge-mutex")
 }
 
-version = "${property("mod.version")}+${sc.current.version}"
-base.archivesName = "${property("mod.id") as String}-neoforge"
+version = "${property("mod.version")}-neoforge-${sc.current.project.substringBefore("-")}"
+base.archivesName = "world-preview-prime"
 
 val requiredJava = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25

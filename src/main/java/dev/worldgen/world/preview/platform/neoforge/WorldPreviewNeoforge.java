@@ -1,5 +1,5 @@
 //? if neoforge {
-package dev.worldgen.world.preview.platform.neoforge;
+/*package dev.worldgen.world.preview.platform.neoforge;
 
 
 import dev.worldgen.world.preview.WorldPreview;
@@ -21,10 +21,9 @@ public class WorldPreviewNeoforge {
 
     private void registerReloadListeners(AddServerReloadListenersEvent event) {
         event.addListener(BiomeColorManager.ID, BiomeColorManager.INSTANCE);
-        //event.addListener(Identifier.fromNamespaceAndPath("world_preview", "biome_color_map"), new BiomeColorMapReloadListener());
         event.addListener(Identifier.fromNamespaceAndPath("world_preview", "structure_map"), new StructureMapReloadListener());
         event.addListener(Identifier.fromNamespaceAndPath("world_preview", "heightmap_preset"), new HeightmapPresetReloadListener());
         event.addListener(Identifier.fromNamespaceAndPath("world_preview", "colormap"), new ColormapReloadListener());
     }
 }
-//? }
+*///? }
