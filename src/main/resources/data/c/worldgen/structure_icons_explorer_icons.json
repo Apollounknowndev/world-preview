@@ -1,0 +1,124 @@
+{
+  "minecraft:swamp_hut": {
+    "texture": "world_preview:textures/structure_icon/swamp_hut.png"
+  },
+  "minecraft:ancient_city": {
+    "texture": "world_preview:textures/structure_icon/ancient_city.png"
+  },
+  "minecraft:ruined_portal": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png"
+  },
+  "minecraft:ruined_portal_desert": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Desert Ruined Portal"
+  },
+  "minecraft:ruined_portal_jungle": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Jungle Ruined Portal"
+  },
+  "minecraft:ruined_portal_mountain": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Mountain Ruined Portal"
+  },
+  "minecraft:ruined_portal_nether": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Nether Ruined Portal"
+  },
+  "minecraft:ruined_portal_ocean": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Ocean Ruined Portal"
+  },
+  "minecraft:ruined_portal_swamp": {
+    "texture": "world_preview:textures/structure_icon/ruined_portal.png",
+    "name": "Swamp Ruined Portal"
+  },
+  "minecraft:jungle_pyramid": {
+    "texture": "world_preview:textures/structure_icon/jungle_temple.png",
+    "name": "Jungle Temple"
+  },
+  "minecraft:monument": {
+    "texture": "world_preview:textures/structure_icon/ocean_monument.png",
+    "name": "Ocean Monument"
+  },
+  "minecraft:mansion": {
+    "texture": "world_preview:textures/structure_icon/woodland_mansion.png",
+    "name": "Woodland Mansion"
+  },
+  "minecraft:buried_treasure": {
+    "texture": "world_preview:textures/structure_icon/chest.png"
+  },
+  "minecraft:shipwreck": {
+    "texture": "world_preview:textures/structure_icon/shipwreck.png"
+  },
+  "minecraft:shipwreck_beached": {
+    "texture": "world_preview:textures/structure_icon/shipwreck_beached.png",
+    "name": "Beached Shipwreck"
+  },
+  "minecraft:pillager_outpost": {
+    "texture": "world_preview:textures/structure_icon/pillager_outpost.png"
+  },
+  "minecraft:trail_ruins": {
+    "texture": "world_preview:textures/structure_icon/trail_ruins.png"
+  },
+  "minecraft:nether_fossil": {
+    "texture": "world_preview:textures/structure_icon/nether_fossil.png"
+  },
+  "minecraft:end_city": {
+    "texture": "world_preview:textures/structure_icon/end_city.png"
+  },
+  "minecraft:desert_pyramid": {
+    "texture": "world_preview:textures/structure_icon/desert_temple.png",
+    "name": "Desert Temple"
+  },
+  "minecraft:stronghold": {
+    "item": "minecraft:ender_eye"
+  },
+  "minecraft:trial_chambers": {
+    "texture": "world_preview:textures/structure_icon/trial_chambers.png"
+  },
+  "minecraft:igloo": {
+    "texture": "world_preview:textures/structure_icon/igloo.png"
+  },
+  "minecraft:ocean_ruin_cold": {
+    "texture": "world_preview:textures/structure_icon/ocean_ruins.png",
+    "name": "Cold Ocean Ruins"
+  },
+  "minecraft:ocean_ruin_warm": {
+    "texture": "world_preview:textures/structure_icon/ocean_ruins.png",
+    "name": "Warm Ocean Ruins"
+  },
+  "minecraft:mineshaft": {
+    "texture": "world_preview:textures/structure_icon/mineshaft.png"
+  },
+  "minecraft:mineshaft_mesa": {
+    "texture": "world_preview:textures/structure_icon/mineshaft.png",
+    "name": "Mesa Mineshaft"
+  },
+  "minecraft:fortress": {
+    "texture": "world_preview:textures/structure_icon/nether_fortress.png",
+    "name": "Nether Fortress"
+  },
+  "minecraft:bastion_remnant": {
+    "texture": "world_preview:textures/structure_icon/bastion.png"
+  },
+  "minecraft:village_plains": {
+    "texture": "world_preview:textures/structure_icon/plains_village.png",
+    "name": "Plains Village"
+  },
+  "minecraft:village_desert": {
+    "texture": "world_preview:textures/structure_icon/desert_village.png",
+    "name": "Desert Village"
+  },
+  "minecraft:village_savanna": {
+    "texture": "world_preview:textures/structure_icon/savanna_village.png",
+    "name": "Savanna Village"
+  },
+  "minecraft:village_snowy": {
+    "texture": "world_preview:textures/structure_icon/snowy_village.png",
+    "name": "Snowy Village"
+  },
+  "minecraft:village_taiga": {
+    "texture": "world_preview:textures/structure_icon/taiga_village.png",
+    "name": "Taiga Village"
+  }
+}

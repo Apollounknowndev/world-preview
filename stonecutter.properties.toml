@@ -1,0 +1,50 @@
+# See https://stonecutter.kikugie.dev/wiki/config/properties#centralized-properties
+mod.id = "world_preview"
+mod.name = "World Preview"
+mod.group = "dev.worldgen"
+mod.version = "2.0.0"
+
+deps.fabric_loader = "0.19.3"
+loomx.loom_version = "1.17-SNAPSHOT"
+
+["21.1"]
+mod.mc_releases = ["1.21", "1.21.1"]
+
+[fabric."21.1"]
+mod.mc_compat = ">=1.21 <=1.21.1"
+deps.fabric_api = "0.116.12+1.21.1"
+
+
+[neoforge."21.1"]
+mod.mc_compat = "[1.21, 1.21.1]"
+deps.neo_loader = "21.1.234"
+
+
+
+["26.1"]
+mod.mc_releases = ["26.1", "26.1.1", "26.1.2"]
+
+
+[fabric."26.1"]
+mod.mc_compat = "~26.1"
+deps.fabric_api = "0.152.1+26.1.2"
+
+
+[neoforge."26.1"]
+mod.mc_compat = "[26.1, 26.2)"
+deps.neo_loader = "26.1.2.76"
+
+
+
+["26.2"]
+mod.mc_releases = ["26.2"]
+
+
+[fabric."26.2"]
+mod.mc_compat = "~26.2"
+deps.fabric_api = "0.152.2+26.2"
+
+
+[neoforge."26.2"]
+mod.mc_compat = "[26.2, 26.3)"
+deps.neo_loader = "26.2.0.6-beta"

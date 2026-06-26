@@ -38,15 +38,3 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
-
-# ETC
-build.gradle
-gradle.properties
-WorldPreview.java
-WorldPreviewClient.java
-DummyMinecraftServer.java
-ReloadableServerResourcesMixin.java
-fabric.mod.json
-neoforge.mods.toml
-pack.mcmeta
-settings.gradle

@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[1,)"
+license = "Apache 2.0"
+
+[[mods]]
+modId = "${id}"
+displayName = "${name}"
+version = "${version}"
+authors = "Apollo"
+description = "Allows you to preview a map in the new world screen"
+
+logoFile = "assets/world_preview/icon.png"
+#displayURL = "..."
+#issueTrackerUrl = "..."
+
+[[mixins]]
+config = "world_preview.mixins.json"
+
+[[dependencies.${id}]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft}"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,32 @@
+package dev.worldgen.world.preview.client;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+public class WorldPreviewClient {
+    public static void renderTexture(GuiGraphicsExtractor graphics, AbstractTexture texture, double xMin, double yMin, double xMax, double yMax) {
+        // 26.1 dropped the immediate-mode shader path; draw the texture with the same GpuTextureView
+        // blit vanilla uses for DynamicTexture-backed GUI textures (replaces the old custom shader).
+        graphics.blit(
+                texture.getTextureView(),
+                texture.getSampler(),
+                (int) xMin, (int) yMin, (int) xMax, (int) yMax,
+                0.0F, 1.0F, 0.0F, 1.0F
+        );
+    }
+
+    public static String toTitleCase(String input) {
+        if (input == null || input.isBlank()) {
+            return input;
+        }
+
+        return Arrays
+                .stream(input.split(" "))
+                .map(StringUtils::capitalize)
+                .collect(Collectors.joining(" "));
+    }
+}
