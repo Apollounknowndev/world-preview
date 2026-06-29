@@ -6,7 +6,7 @@ license = "Apache 2.0"
 modId = "${id}"
 displayName = "${name}"
 version = "${version}"
-authors = "Apollo"
+authors = "Apollo (Current Author), Caeruleus Draconis (Original Author), ChocoBoy (Contributor), Taiterio (Contributor)"
 description = "Allows you to preview a map in the new world screen"
 
 logoFile = "assets/world_preview/icon.png"

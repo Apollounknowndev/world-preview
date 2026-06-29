@@ -5,13 +5,15 @@
 	"name": "World preview",
 	"description": "Allows you to preview a map in the new world screen",
 	"authors": [
-		"Caeruleus Draconis",
-		"Taiterio"
+		"Apollo (Current Author)",
+		"Caeruleus Draconis (Original Author)",
+		"ChocoBoy (Contributor)",
+		"Taiterio (Contributor)"
 	],
 	"contact": {
-		"homepage": "https://modrinth.com/mod/world-preview",
-		"sources": "https://github.com/caeruleusDraconis/world-preview",
-		"issues": "https://github.com/caeruleusDraconis/world-preview/issues"
+		"homepage": "https://modrinth.com/mod/world-preview-prime",
+		"sources": "https://github.com/Apollounknowndev/world-preview-prime",
+		"issues": "https://github.com/Apollounknowndev/world-preview-prime/issues"
 	},
 	"license": "Apache-2.0",
 	"icon": "assets/world_preview/icon.png",
