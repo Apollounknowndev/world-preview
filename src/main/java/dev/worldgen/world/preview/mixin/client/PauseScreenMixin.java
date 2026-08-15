@@ -3,6 +3,7 @@ package dev.worldgen.world.preview.mixin.client;
 import dev.worldgen.world.preview.WorldPreview;
 import dev.worldgen.world.preview.client.WorldPreviewComponents;
 import dev.worldgen.world.preview.client.gui.screens.InGamePreviewScreen;
+import dev.worldgen.world.preview.client.gui.screens.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -55,6 +56,7 @@ public abstract class PauseScreenMixin {
     @Unique
     private void onPressWorldPreview(Button btn) {
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.setScreen(new InGamePreviewScreen());
+
+        ScreenUtils.setScreen(minecraft, new InGamePreviewScreen());
     }
 }

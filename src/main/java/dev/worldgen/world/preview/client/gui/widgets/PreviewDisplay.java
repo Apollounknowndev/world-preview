@@ -9,6 +9,7 @@ import dev.worldgen.world.preview.backend.storage.PreviewSection;
 import dev.worldgen.world.preview.backend.storage.PreviewStorage;
 import dev.worldgen.world.preview.client.WorldPreviewClient;
 import dev.worldgen.world.preview.client.gui.PreviewDisplayDataProvider;
+import dev.worldgen.world.preview.client.gui.screens.ScreenUtils;
 import dev.worldgen.world.preview.client.gui.widgets.lists.BiomesList;
 import com.mojang.blaze3d.platform.NativeImage;
 import it.unimi.dsi.fastutil.shorts.Short2LongMap;
@@ -18,6 +19,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -800,8 +802,10 @@ public class PreviewDisplay extends AbstractWidget implements AutoCloseable {
 
     @Override
     public void onClick(MouseButtonEvent event, boolean doubleClick) {
-        if (minecraft.screen != null) {
-            minecraft.screen.setFocused(this);
+
+        Screen screen = ScreenUtils.getScreen(minecraft);
+        if (screen != null) {
+            screen.setFocused(this);
         }
 
         /**

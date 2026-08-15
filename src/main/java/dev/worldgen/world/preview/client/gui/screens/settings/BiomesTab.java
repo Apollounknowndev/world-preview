@@ -25,6 +25,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.dimension.LevelStem;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -267,6 +268,13 @@ public class BiomesTab implements Tab, AutoCloseable {
             box.setValue(strValue);
         }
     }
+
+    //? if >= 26.2 {
+    /*@Override
+    public @NonNull GridLayout getLayout() {
+        return layout;
+    }
+    *///? }
 
     public enum BiomeListFilter {
         DIMENSION(x -> {

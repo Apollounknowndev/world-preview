@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.tabs.Tab;
+import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -347,4 +348,11 @@ public class HeightmapTab implements Tab {
             }
         }
     }
+
+    //? if >= 26.2 {
+    /*@Override
+    public Layout getLayout() {
+        return null;
+    }
+    *///?}
 }

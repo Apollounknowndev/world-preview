@@ -2,8 +2,10 @@ package dev.worldgen.world.preview.mixin.client;
 
 import dev.worldgen.world.preview.WorldPreview;
 import dev.worldgen.world.preview.client.gui.screens.PreviewTab;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.tabs.Tab;
 import net.minecraft.client.gui.components.tabs.TabNavigationBar;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,10 +15,18 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+//? if >= 26.2 {
+/*import net.minecraft.client.gui.components.tabs.MenuTabBar;
+*///? }
+
 @Mixin(CreateWorldScreen.class)
 public abstract class CreateWorldScreenMixin {
 
+    //? if >= 26.2 {
+    /*@Shadow private @Nullable MenuTabBar tabNavigationBar;
+    *///? } else {
     @Shadow private @Nullable TabNavigationBar tabNavigationBar;
+     //? }
 
     private PreviewTab previewTab;
 
@@ -35,11 +45,19 @@ public abstract class CreateWorldScreenMixin {
     private void appendPreviewTab(CallbackInfo ci) {
         previewTab = new PreviewTab((CreateWorldScreen) (Object) this, ((ScreenAccessor) this).getMinecraft());
 
+
+
+        //? if >= 26.2 {
+        /*final MenuTabBar originalRaw = tabNavigationBar;
+        final TabNavigationBarAccessor original = (TabNavigationBarAccessor)originalRaw;
+        var builder = MenuTabBar.builder(original.getTabManager(), originalRaw.getWidth());
+        *///? } else {
         final TabNavigationBar originalRaw = tabNavigationBar;
         final TabNavigationBarAccessor original = (TabNavigationBarAccessor)originalRaw;
+        var builder = TabNavigationBar.builder(original.getTabManager(), original.getWidth());
+         //? }
 
-        tabNavigationBar = TabNavigationBar
-                .builder(original.getTabManager(), original.getWidth())
+        tabNavigationBar = builder
                 .addTabs(original.getTabs().toArray(new Tab[0]))
                 .addTabs(previewTab)
                 .build();
