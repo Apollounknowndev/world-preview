@@ -90,12 +90,11 @@ public class WorldPreview {
     }
 
     public static void loaderSpecificTeardown(MinecraftServer server) {
-        //? if fabric {
-         //Nothing to do on fabric
-        
-        //? } else {
+        //? if !fabric {
         /*ServerLifecycleHooks.handleServerStopped(server);
          *///? }
+
+        //Nothing to do on fabric
     }
 
     public static WorldPreviewConfig cfg() {

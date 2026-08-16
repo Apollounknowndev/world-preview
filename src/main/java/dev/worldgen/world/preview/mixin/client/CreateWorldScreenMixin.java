@@ -45,8 +45,6 @@ public abstract class CreateWorldScreenMixin {
     private void appendPreviewTab(CallbackInfo ci) {
         previewTab = new PreviewTab((CreateWorldScreen) (Object) this, ((ScreenAccessor) this).getMinecraft());
 
-
-
         //? if >= 26.2 {
         /*final MenuTabBar originalRaw = tabNavigationBar;
         final TabNavigationBarAccessor original = (TabNavigationBarAccessor)originalRaw;

@@ -12,7 +12,7 @@ public interface TabNavigationBarAccessor {
 
     //? if < 26.2 {
         @Accessor
-        int getWidth();
+        int getWidth(); // Removed in 26.2; TabNavigationBar exposes a public getter instead.
     //? }
 
     @Accessor
