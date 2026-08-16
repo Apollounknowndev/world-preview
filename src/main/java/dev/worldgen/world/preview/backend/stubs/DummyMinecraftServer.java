@@ -8,6 +8,7 @@ import net.minecraft.server.Services;
 import net.minecraft.server.WorldStem;
 import net.minecraft.server.level.progress.LevelLoadListener;
 import net.minecraft.server.notifications.EmptyNotificationService;
+import net.minecraft.server.notifications.NotificationManager;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.server.permissions.PermissionSet;
@@ -32,7 +33,12 @@ public class DummyMinecraftServer extends MinecraftServer {
             Services services,
             LevelLoadListener levelLoadListener
     ) {
+        //? if >= 26.2 {
+        /*super(thread, levelStorageAccess, packRepository, worldStem, Optional.empty(), proxy, dataFixer, services, levelLoadListener, false, new NotificationManager());
+        *///? } else {
         super(thread, levelStorageAccess, packRepository, worldStem, Optional.empty(), proxy, dataFixer, services, levelLoadListener, false);
+         //? }
+
         this.setSingleplayerProfile(new GameProfile(UUID.randomUUID(), "world-preview"));
         this.setDemo(false);
         this.setPlayerList(new DummyPlayerList(this, this.registries(), this.playerDataStorage, new EmptyNotificationService()));
@@ -94,6 +100,18 @@ public class DummyMinecraftServer extends MinecraftServer {
     public int getRateLimitPacketsPerSecond() {
         return 0;
     }
+
+    //? if >= 26.2 {
+    /*@Override
+    public int getCommandSpamThresholdSeconds() {
+        return 0;
+    }
+
+    @Override
+    public int getChatSpamThresholdSeconds() {
+        return 0;
+    }
+    *///? }
 
     @Override
     public boolean useNativeTransport() {

@@ -15,8 +15,8 @@ import java.nio.file.Path;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 //? } else {
-/*
-import net.neoforged.fml.ModList;
+
+/*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.util.thread.SidedThreadGroups;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -90,12 +90,11 @@ public class WorldPreview {
     }
 
     public static void loaderSpecificTeardown(MinecraftServer server) {
-        //? if fabric {
-        // Nothing to do on fabric
-        
-        //? } else {
+        //? if !fabric {
         /*ServerLifecycleHooks.handleServerStopped(server);
          *///? }
+
+        //Nothing to do on fabric
     }
 
     public static WorldPreviewConfig cfg() {

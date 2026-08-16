@@ -2,10 +2,12 @@ package dev.worldgen.world.preview.client.gui.widgets;
 
 import dev.worldgen.world.preview.client.WorldPreviewClient;
 import com.mojang.blaze3d.platform.NativeImage;
+import dev.worldgen.world.preview.client.gui.screens.ScreenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -172,8 +174,11 @@ public class ColorChooser extends AbstractWidget implements AutoCloseable {
         if (!this.active || !this.visible || !isValidClickButton(buttonInfo) || !isMouseOver(mouseX, mouseY)) {
             return false;
         }
-        if (Minecraft.getInstance().screen != null) {
-            Minecraft.getInstance().screen.setFocused(this);
+
+        Screen screen = ScreenUtils.getScreen(Minecraft.getInstance());
+
+        if (screen != null) {
+            screen.setFocused(this);
         }
 
         double leftX = getX();

@@ -10,8 +10,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(TabNavigationBar.class)
 public interface TabNavigationBarAccessor {
 
-    @Accessor
-    int getWidth();
+    //? if < 26.2 {
+        @Accessor
+        int getWidth(); // Removed in 26.2; TabNavigationBar exposes a public getter instead.
+    //? }
 
     @Accessor
     TabManager getTabManager();

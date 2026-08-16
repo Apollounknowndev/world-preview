@@ -8,6 +8,7 @@ import dev.worldgen.world.preview.client.gui.screens.settings.DimensionsTab;
 import dev.worldgen.world.preview.client.gui.screens.settings.GeneralTab;
 import dev.worldgen.world.preview.client.gui.screens.settings.HeightmapTab;
 import dev.worldgen.world.preview.client.gui.screens.settings.SamplingTab;
+import dev.worldgen.world.preview.mixin.client.TabNavigationBarAccessor;
 import dev.worldgen.world.preview.reload.biomecolor.BiomeColorEntry;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -28,6 +29,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static dev.worldgen.world.preview.client.WorldPreviewComponents.SETTINGS_TITLE;
+
+//? if >= 26.2 {
+/*import net.minecraft.client.gui.components.tabs.MenuTabBar;
+ *///? }
 
 public class SettingsScreen extends Screen {
     public static final Identifier HEADER_SEPERATOR = Identifier.parse("textures/gui/header_separator.png");
@@ -60,7 +65,14 @@ public class SettingsScreen extends Screen {
                 new DimensionsTab(minecraft, previewContainer.levelStemKeys()),
                 new BiomesTab(minecraft, previewContainer)
         );
-        tabNavigationBar = TabNavigationBar.builder(tabManager, this.width)
+
+        //? if >= 26.2 {
+        /*var builder = MenuTabBar.builder(tabManager, this.width);
+        *///? } else {
+        var builder = TabNavigationBar.builder(tabManager, this.width);
+         //? }
+
+        tabNavigationBar = builder
                 .addTabs(tabs.toArray(new Tab[0]))
                 .build();
         tabNavigationBar.selectTab(0, false);
@@ -80,8 +92,13 @@ public class SettingsScreen extends Screen {
     @Override
     public void repositionElements() {
         if (tabNavigationBar != null) {
+
+            //? if >= 26.2 {
+            /*tabNavigationBar.arrangeElements(this.width);
+            *///? } else {
             tabNavigationBar.updateWidth(this.width);
             tabNavigationBar.arrangeElements();
+             //? }
 
             bottomButtons.arrangeElements();
             FrameLayout.centerInRectangle(this.bottomButtons, 0, this.height - 36, this.width, 36);
@@ -115,7 +132,7 @@ public class SettingsScreen extends Screen {
         previewContainer.resetTabs();
 
         // Go back
-        minecraft.setScreen(lastScreen);
+        ScreenUtils.setScreen(minecraft, lastScreen);
     }
 
     @Override

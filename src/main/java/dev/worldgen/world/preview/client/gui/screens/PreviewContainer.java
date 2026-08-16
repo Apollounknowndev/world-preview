@@ -221,7 +221,7 @@ public class PreviewContainer implements AutoCloseable, PreviewDisplayDataProvid
                 BUTTONS_TEXTURE, BUTTONS_TEX_WIDTH, BUTTONS_TEX_HEIGHT, /* resourceLocation, textureWidth, textureHeight*/
                 x -> {
                     workManager.cancel();
-                    minecraft.setScreen(new SettingsScreen(screen, this));
+                    ScreenUtils.setScreen(minecraft, new SettingsScreen(screen, this));
                 }
         );
         settings.setTooltip(Tooltip.create(BTN_SETTINGS));
@@ -871,7 +871,7 @@ public class PreviewContainer implements AutoCloseable, PreviewDisplayDataProvid
 
     public void doLayout(ScreenRectangle screenRectangle) {
         if (screenRectangle == null) {
-            screenRectangle = minecraft.screen.getRectangle();
+            screenRectangle = ScreenUtils.getScreen(minecraft).getRectangle();
         }
         lastScreenRectangle = screenRectangle;
 

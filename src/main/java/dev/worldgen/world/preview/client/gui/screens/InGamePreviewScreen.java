@@ -102,7 +102,8 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
         if (!WorldPreview.cfg().cacheInGame) {
             return;
         }
-        minecraft.setScreen(new PreviewCacheLoadingScreen(SAVING_PREVIEW));
+
+        ScreenUtils.setScreen(minecraft, new PreviewCacheLoadingScreen(SAVING_PREVIEW));
         writeCacheFile(previewContainer.workManager().previewStorage(), cacheDir().resolve(filename()));
     }
 
@@ -112,9 +113,9 @@ public class InGamePreviewScreen extends Screen implements PreviewContainerDataP
             return new PreviewStorage(yMin, yMax);
         }
 
-        minecraft.setScreen(new PreviewCacheLoadingScreen(LOADING_PREVIEW));
+        ScreenUtils.setScreen(minecraft, new PreviewCacheLoadingScreen(LOADING_PREVIEW));
         final PreviewStorage res = readCacheFile(yMin, yMax, cacheDir().resolve(filename()));
-        minecraft.setScreen(this);
+        ScreenUtils.setScreen(minecraft, this);
         return res;
     }
 

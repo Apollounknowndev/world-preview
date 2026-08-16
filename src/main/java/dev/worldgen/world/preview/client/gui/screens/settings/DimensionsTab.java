@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.tabs.Tab;
+import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -71,6 +72,13 @@ public class DimensionsTab implements Tab {
         top += LINE_HEIGHT + LINE_VSPACE;
         dimensionList.updateSizeAndPosition(width, bottom - top, left, top);
     }
+
+    //? if >= 26.2 {
+        /*@Override
+        public Layout getLayout() {
+            return null;
+        }
+    *///?}
 
     public class DimensionList extends BaseObjectSelectionList<DimensionList.DimensionEntry> {
         public DimensionList(Minecraft minecraft, int width, int height, int x, int y) {

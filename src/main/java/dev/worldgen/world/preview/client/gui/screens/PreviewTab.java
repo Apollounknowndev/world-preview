@@ -8,6 +8,7 @@ import dev.worldgen.world.preview.mixin.client.CreateWorldScreenAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.tabs.Tab;
+import net.minecraft.client.gui.layouts.Layout;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
@@ -156,9 +157,10 @@ public class PreviewTab implements Tab, AutoCloseable, PreviewContainerDataProvi
         if (!WorldPreview.cfg().cacheInNew) {
             return;
         }
-        minecraft.setScreen(new PreviewCacheLoadingScreen(SAVING_PREVIEW));
+
+        ScreenUtils.setScreen(minecraft, new PreviewCacheLoadingScreen(SAVING_PREVIEW));
         writeCacheFile(previewContainer.workManager().previewStorage(), cacheDir().resolve(filename(seed)));
-        minecraft.setScreen(createWorldScreen);
+        ScreenUtils.setScreen(minecraft, createWorldScreen);
     }
 
     @Override
@@ -167,9 +169,9 @@ public class PreviewTab implements Tab, AutoCloseable, PreviewContainerDataProvi
             return new PreviewStorage(yMin, yMax);
         }
 
-        minecraft.setScreen(new PreviewCacheLoadingScreen(LOADING_PREVIEW));
+        ScreenUtils.setScreen(minecraft, new PreviewCacheLoadingScreen(LOADING_PREVIEW));
         final PreviewStorage res = readCacheFile(yMin, yMax, cacheDir().resolve(filename(seed)));
-        minecraft.setScreen(createWorldScreen);
+        ScreenUtils.setScreen(minecraft, createWorldScreen);
         return res;
     }
 
@@ -240,4 +242,11 @@ public class PreviewTab implements Tab, AutoCloseable, PreviewContainerDataProvi
                 .worldgenRegistries()
                 .replaceFrom(RegistryLayer.DIMENSIONS, worldDimensions.dimensionsRegistryAccess());
     }
+
+    //? if >= 26.2 {
+    /*@Override
+    public Layout getLayout() {
+        return null;
+    }
+    *///?}
 }

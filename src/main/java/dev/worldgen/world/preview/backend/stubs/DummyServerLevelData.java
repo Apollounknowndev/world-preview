@@ -87,4 +87,10 @@ public class DummyServerLevelData implements ServerLevelData {
     public float getDayTimeFraction() {
         return 0.0f;
     }
+
+
+    //? if >= 26.2 {
+    /*@Override
+    public void setAllowCommands(boolean allowCommands) {}
+    *///? }
 }
